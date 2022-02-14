@@ -11,6 +11,7 @@ module.exports = (sequelize) => {
         // TODO: use this regex /^\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$/g to recognize local games
         // or use ?source=local in the query
         id: {
+            // "No puede ser un ID de un videojuego ya existente en la API rawg"
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true
