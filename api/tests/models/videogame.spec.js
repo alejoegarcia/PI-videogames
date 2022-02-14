@@ -10,19 +10,17 @@ describe('Videogame model', () => {
         beforeEach(() => Videogame.sync({ force: true }));
         describe('name should', () => {
             let incorrectlyNamedGame = {
-                // id: 1,
                 name: "",
                 description: "lorem ipsum",
                 launchDate: "2003-12-5",
                 rating: 4.2,
-                platforms: ["PS4", "XBox", "PC"]
+                platforms: ["PlayStation 4", "Xbox", "PC"]
             }
             let correctlyNamedGame = {
-                // id: 2,
                 description: "lorem ipsum",
                 launchDate: "2003-5-24",
                 rating: 4.2,
-                platforms: ["PS4", "XBox", "PC"]
+                platforms: ["PlayStation 4", "Xbox", "PC"]
             }
             describe('throw an error when it is', () => {
                 it('null', (done) => {
@@ -65,20 +63,18 @@ describe('Videogame model', () => {
         });
         describe('description should', () => {
             let incorrectlyDescribedGame = {
-                // id: 1,
                 name: "my great game",
                 description: "",
                 launchDate: "1987-4-5",
                 rating: 4.2,
-                platforms: ["PS4", "XBox", "PC"]
+                platforms: ["PlayStation 4", "Xbox", "PC"]
             }
             let correctlyDescribedGame = {
-                // id: 2,
                 name: "another greate name",
                 description: "",
                 launchDate: "2011-8-17",
                 rating: 4.2,
-                platforms: ["PS4", "XBox", "PC"]
+                platforms: ["PlayStation 4", "Xbox", "PC"]
             }
             describe('throw an error when it is', () => {
                 it('null', (done) => {
@@ -109,11 +105,7 @@ describe('Videogame model', () => {
             it('accept a valid description (super duper shooter game)', (done) => {
                 correctlyDescribedGame.description = "super duper shooter game";
                 Videogame.create(correctlyDescribedGame)
-                    // .then(() => done())
-                    .then((res) => {
-                        console.log(res);
-                        done();
-                    })
+                    .then(() => done())
                     .catch(() => done(new Error('It should accept a valid description')));
             });
             it('accept a valid description (super duper MOBA game)', (done) => {
@@ -125,11 +117,10 @@ describe('Videogame model', () => {
         });
         describe('launch date should', () => {
             let anyLaunchDateGame = {
-                // id: 1,
                 name: "another greate game",
                 description: "the best",
                 rating: 3.6,
-                platforms: ["PS4", "PC"]
+                platforms: ["PlayStation 4", "PC"]
             };
             describe('accept', () => {
                 it('a null value', (done) => {
@@ -190,6 +181,152 @@ describe('Videogame model', () => {
                         .catch(() => done());
                 });
             })
+        });
+        describe('rating should', () => {
+            let ratedGame = {
+                name: "I rated this game",
+                description: "it could be better",
+                launchDate: null,
+                platforms: ["PlayStation 4", "PC", "Xbox"]
+            };
+            describe('accept', () => {
+                it('null', (done) => {
+                    ratedGame.rating = null;
+                    Videogame.create(ratedGame)
+                        .then(() => done())
+                        .catch(() => done(new Error('It should accept a null rating')));
+                });
+                it('undefined', (done) => {
+                    ratedGame.rating = undefined;
+                    Videogame.create(ratedGame)
+                        .then(() => done())
+                        .catch(() => done(new Error('It should accept an undefined rating')));
+                });
+                it('zero', (done) => {
+                    ratedGame.rating = 0;
+                    Videogame.create(ratedGame)
+                        .then(() => done())
+                        // .catch(() => done(new Error('It should accept a 0 rating')));
+                        .catch((err) => {
+                            console.log(err);
+                            done(new Error('It should accept a 0 rating'))
+                        });
+                });
+                it('five', (done) => {
+                    ratedGame.rating = 5;
+                    Videogame.create(ratedGame)
+                        .then(() => done())
+                        .catch(() => done(new Error('It should accept a 5 rating')));
+                });
+                describe('anything in between', () => {
+                    it('2.3', (done) => {
+                        ratedGame.rating = 2.3;
+                        Videogame.create(ratedGame)
+                            .then(() => done())
+                            .catch(() => done(new Error('It should accept a 2.3 rating')));
+                    });
+                    it('3.7', (done) => {
+                        ratedGame.rating = 3.7;
+                        Videogame.create(ratedGame)
+                            .then(() => done())
+                            .catch(() => done(new Error('It should accept a 3.7 rating')));
+                    });
+                });
+            });
+            describe('throw an error when it is', () => {
+                it('< 0 (-0.1)', (done) => {
+                    ratedGame.rating = -0.1;
+                    Videogame.create(ratedGame)
+                        .then(() => done(new Error('It should reject a negative rating')))
+                        .catch(() => done());
+                });
+                it('< 0 (-78914)', (done) => {
+                    ratedGame.rating = -78914;
+                    Videogame.create(ratedGame)
+                        .then(() => done(new Error('It should reject a negative rating')))
+                        .catch(() => done());
+                });
+                it('> 5 (5.1)', (done) => {
+                    ratedGame.rating = 5.1;
+                    Videogame.create(ratedGame)
+                        .then(() => done(new Error('It should reject a > 5 rating')))
+                        .catch(() => done());
+                });
+                it('> 5 (48903)', (done) => {
+                    ratedGame.rating = 48903;
+                    Videogame.create(ratedGame)
+                        .then(() => done(new Error('It should reject a > 5 rating')))
+                        .catch(() => done());
+                });
+            });
+        });
+        describe('platforms should', () => {
+            describe('accept', () => {
+                let validPlatformsGame = {
+                    name: "I wanna play this game",
+                    description: "where can I play it",
+                    launchDate: "2008-03-25"
+                };
+                describe('an array of', () => {
+                    it('one valid element', (done) => {
+                        validPlatformsGame.platforms = ["PlayStation 4"];
+                        Videogame.create(validPlatformsGame)
+                            .then(() => done())
+                            .catch(() => done(new Error('It should accept a one-element array')));
+                    });
+                    it('two valid elements', (done) => {
+                        validPlatformsGame.platforms = ["PlayStation 4", "PC"];
+                        Videogame.create(validPlatformsGame)
+                            .then(() => done())
+                            .catch(() => done(new Error('It should accept a two-element array')));
+                    });
+                    it('three valid elements', (done) => {
+                        validPlatformsGame.platforms = ["PlayStation 4", "PC", "SNES"];
+                        Videogame.create(validPlatformsGame)
+                            .then(() => done())
+                            .catch(() => done(new Error('It should accept a three-element array')));
+                    });
+                });
+            });
+            describe('reject', () => {
+                let invalidPlatformsGame = {
+                    name: "I wanna play this game",
+                    description: "where can I play it",
+                    launchDate: "2008-03-25"
+                };
+                it('an empty array', (done) => {
+                    invalidPlatformsGame.platforms = [];
+                    Videogame.create(invalidPlatformsGame)
+                        .then(() => done(new Error('It should reject an empty array')))
+                        .catch(() => done());
+                });
+                describe('an array of', () => {
+                    it('one invalid element', (done) => {
+                        invalidPlatformsGame.platforms = ["error me"];
+                        Videogame.create(invalidPlatformsGame)
+                            .then(() => done(new Error('It should reject an invalid array')))
+                            .catch(() => done());
+                    });
+                    it('one or more invalid elements', (done) => {
+                        invalidPlatformsGame.platforms = ["error me", "PC"];
+                        Videogame.create(invalidPlatformsGame)
+                            .then(() => done(new Error('It should reject an invalid array')))
+                            .catch(() => done());
+                    });
+                    it('one or more invalid elements (reversed)', (done) => {
+                        invalidPlatformsGame.platforms = ["PC", "nope"];
+                        Videogame.create(invalidPlatformsGame)
+                            .then(() => done(new Error('It should reject an invalid array')))
+                            .catch(() => done());
+                    });
+                    it('two or more invalid elements', (done) => {
+                        invalidPlatformsGame.platforms = ["macOS", "custom device", "PC"];
+                        Videogame.create(invalidPlatformsGame)
+                            .then(() => done(new Error('It should reject an invalid array')))
+                            .catch(() => done());
+                    });
+                });
+            });
         });
     });
 });
