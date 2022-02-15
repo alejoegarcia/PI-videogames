@@ -1,87 +1,24 @@
-require('dotenv').config();
+// #region imports
 const express = require('express');
-const axios = require('axios');
 const { Op } = require('sequelize');
+
 const { Videogame, Genre } = require('../db.js');
-const { RAWG_API_KEY } = process.env;
+const {
+    getVideogamesFromAPI,
+    getDetailsFromAPI,
+    getGenresFromAPI,
+    splitInChunks
+} = require("../utils.js");
+
+// #endregion imports
 // Importar todos los routers;
 // Ejemplo: const authRouter = require('./auth.js');
 
-
+// #region general variables
 const router = express.Router();
 
-// allowed API endpoints
-const getAllGamesURL = `https://api.rawg.io/api/games?key=${RAWG_API_KEY}`;
-const getGamesByNameURL = `https://api.rawg.io/api/games?key=${RAWG_API_KEY}&search=`;
-const getGenresURL = `https://api.rawg.io/api/genres?key=${RAWG_API_KEY}`;
-const getGameDetailsURL = `https://api.rawg.io/api/games/GAMEID?key=${RAWG_API_KEY}`;
-
 // general variables
-const maxGamesfromAPI = 100;
-const videogameIDregex = /^\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$/y;
-
-async function callAPI(url) {
-    try {
-        // get the data from the API
-        const responseFromAPI = await axios.get(url);
-        return responseFromAPI.data;
-    } catch (error) {
-        // something happened
-        throw error;
-    }
-}
-
-async function getVideogamesFromAPI(paginatedURL, alreadyFetchedGames = 0, gameName) {
-    // array to save the fetch's results
-    let gamesFromAPI = [];
-    // url from where we'll get the data (API's pagination has 20 items and adds ?page=n)
-    // const url = paginatedURL ? paginatedURL : getAllGamesURL;
-    // const url = gameName ? `` paginatedURL ? paginatedURL : getAllGamesURL;
-    const url = paginatedURL ?
-        paginatedURL :
-        gameName !== undefined ?
-            `${getGamesByNameURL}${gameName}`
-            : getAllGamesURL;
-
-    try {
-        // get the data from the API
-        const responseData = await callAPI(url);
-
-        // push only the needed info while there's info to push and we haven't already reached the max amount of games (as stated in the README)
-        // if we're not on the first call, we've already fetched info and we have to consider the alreadyFetchedGames to prevent this recursion from going on for eternity
-        for (let i = 0; i < responseData.results.length && alreadyFetchedGames + gamesFromAPI.length < maxGamesfromAPI; i++) {
-            const element = responseData.results[i];
-            gamesFromAPI.push({
-                id: element.id, // we also get the id to include it in the link to the game's details
-                name: element.name,
-                image: element.background_image,
-                genres: element.genres
-            });
-        }
-
-        // if we haven't fully populated the array and there's more info to retrieve from the API, return the destructuring of the current results array and await for the recursive call
-        // include alreadyFetchedGames + gamesFromAPI.length to avoid infinite recursion
-        if (alreadyFetchedGames + gamesFromAPI.length < maxGamesfromAPI && responseData.next) {
-            return [
-                ...gamesFromAPI,
-                ...await getVideogamesFromAPI(responseData.next, alreadyFetchedGames + gamesFromAPI.length)
-                // we don't need to pass gameName as it's already inside jres.next and this is the first value we check when setting the URL
-            ];
-        } else {
-            // we've successfully populated the array or we can't get more info from the API, stop the recursion
-            return gamesFromAPI;
-        }
-    } catch (error) {
-        // something went wrong
-        throw error;
-    }
-}
-
-async function getDetailsFromAPI(id) {
-    const url = getGameDetailsURL.replace("GAMEID", id);
-    const responseData = await callAPI(url);
-    return responseData;
-}
+// #endregion general variables
 
 // Configurar los routers
 // Ejemplo: router.use('/auth', authRouter);
@@ -142,12 +79,14 @@ router.get('/videogames', async (request, response) => {
             }
         } catch (error) {
             // TODO: handle other errors, this is API-specific
-            const e = {};
-            e[error.message] = error.response.data.error;
-            return response.status(404).json(e);
+            // const e = {};
+            // e[error.message] = error.response.data.error;
+            return response.status(404).json(error);
         }
     }
-    return response.json(videogames);
+
+    // return the videogames in 15-games chunks (pagination-ready)
+    return response.json(splitInChunks(videogames));
 });
 
 router.get('/videogame/:idVideogame', async (request, response) => {
@@ -155,9 +94,8 @@ router.get('/videogame/:idVideogame', async (request, response) => {
     // include: Genre (sequelize)
     let videogameDetails = {};
 
-    // trying to parse a UUIDV4 return NaN, which is type-coerced to false
-    // if idVideogame can't be parsed, the game belongs to the local DB
-    if (!parseInt(request.params.idVideogame)) {
+    // if idVideogame isNaN, it can only be a (local) UUIDV4
+    if (isNaN(request.params.idVideogame)) {
         // get it from the DB
         const DBcall = await Videogame.findByPk(
             request.params.idVideogame,
@@ -170,23 +108,28 @@ router.get('/videogame/:idVideogame', async (request, response) => {
             return response.status(404).json({ "error": `Local Videogame with ID ${request.params.idVideogame} not found` });
         }
         videogameDetails = DBcall;
-        return response.json(videogameDetails);
+        // return response.json(videogameDetails);
 
     } else {
         // get it from the API
-        const APIcall = await getDetailsFromAPI(request.params.idVideogame);
-        if (APIcall.detail && APIcall.detail === "Not found.") {
-            return response.status(404).json({ error: `API Videogame with ID ${request.params.idVideogame} not found` });
+        try {
+            const APIcall = await getDetailsFromAPI(request.params.idVideogame);
+            if (APIcall.detail && APIcall.detail === "Not found.") {
+                return response.status(404).json({ error: `API Videogame with ID ${request.params.idVideogame} not found` });
+            }
+            videogameDetails = {
+                id: APIcall.id,
+                image: APIcall.background_image,
+                name: APIcall.name,
+                genres: APIcall.genres,
+                description: APIcall.description,
+                launchDate: APIcall.released,
+                platforms: APIcall.platforms
+            };
+
+        } catch (error) {
+            return response.status(404).json(error);
         }
-        videogameDetails = {
-            id: APIcall.id,
-            image: APIcall.background_image,
-            name: APIcall.name,
-            genres: APIcall.genres,
-            description: APIcall.description,
-            launchDate: APIcall.released,
-            platforms: APIcall.platforms
-        };
     }
     return response.json(videogameDetails);
 });
@@ -196,14 +139,18 @@ router.get('/genres', async (request, response) => {
     let genres = await Genre.findAll();
 
     if (genres.length === 0) {
-        const APIcall = await callAPI(getGenresURL);
-        genres = APIcall.results.map((genre) => {
-            // map only needed data
-            return { id: genre.id, name: genre.name };
-        })
+        try {
+            const APIcall = await getGenresFromAPI();
+            genres = APIcall.results.map((genre) => {
+                // map only needed data
+                return { id: genre.id, name: genre.name };
+            })
 
-        // bulkCreate expects an array of objects
-        await Genre.bulkCreate(genres);
+            // bulkCreate expects an array of objects
+            await Genre.bulkCreate(genres);
+        } catch (error) {
+            return response.status(500).json(error);
+        }
     } else {
         // already saved the genres in the DB
         genres = genres.map((genre) => {
