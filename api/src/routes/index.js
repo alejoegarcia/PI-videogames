@@ -18,7 +18,7 @@ const getGameDetailsURL = `https://api.rawg.io/api/games/GAMEID?key=${RAWG_API_K
 
 // general variables
 const maxGamesfromAPI = 100;
-const videogameIDregex = /^\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$/g;
+const videogameIDregex = /^\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$/y;
 
 async function callAPI(url) {
     try {
@@ -93,12 +93,13 @@ router.get('/videogames', async (request, response) => {
 
     if (request.query.name) {
         // filter by name
+        // destructuring de la llamada a la API y a la DB
         try {
 
             videogames = [
                 ...await getVideogamesFromAPI(undefined, undefined, request.query.name),
                 ...await Videogame.findAll({
-                    raw: true,
+                    attributes: ["id", 'name', 'description', "launchDate", "rating", "platforms"],
                     where: {
                         name: {
                             [Op.like]: `%${request.query.name}%`
@@ -116,35 +117,66 @@ router.get('/videogames', async (request, response) => {
         // get all
         // destructuring de la llamada a la API y a la DB
         try {
-            videogames = [
-                ...await getVideogamesFromAPI(),
-                ...await Videogame.findAll({ raw: true, include: Genre })
-            ]
+            if (request.query.source === "local") {
+                videogames = [
+                    ...await Videogame.findAll({
+                        attributes: ["id", 'name', 'description', "launchDate", "rating", "platforms"],
+                        include: Genre
+                    })
+                ];
+            } else if (request.query.source === "external") {
+                videogames = [
+                    ...await getVideogamesFromAPI()
+                ];
+            } else {
+                videogames = [
+                    ...await getVideogamesFromAPI(),
+                    ...await Videogame.findAll({
+                        attributes: ["id", 'name', 'description', "launchDate", "rating", "platforms"],
+                        include: Genre
+                    })
+                ];
+            }
+            if (videogames.length === 0) {
+                return response.json({ "warning": "no games found" });
+            }
         } catch (error) {
+            // TODO: handle other errors, this is API-specific
             const e = {};
             e[error.message] = error.response.data.error;
             return response.status(404).json(e);
         }
     }
-    response.json(videogames);
+    return response.json(videogames);
 });
 
 router.get('/videogame/:idVideogame', async (request, response) => {
     // get by id, request.params.idVideogame
     // include: Genre (sequelize)
     let videogameDetails = {};
-    if (videogameIDregex.test(request.params.idVideogame)) {
+
+    // trying to parse a UUIDV4 return NaN, which is type-coerced to false
+    // if idVideogame can't be parsed, the game belongs to the local DB
+    if (!parseInt(request.params.idVideogame)) {
         // get it from the DB
-        const DBcall = await Videogame.findByPk(request.params.idVideogame);
+        const DBcall = await Videogame.findByPk(
+            request.params.idVideogame,
+            {
+                attributes: ["id", 'name', 'description', "launchDate", "rating", "platforms"],
+                include: Genre
+            }
+        );
         if (DBcall === null) {
-            response.status(404).json({ "error": `Local Videogame with ID ${request.params.idVideogame} not found` });
+            return response.status(404).json({ "error": `Local Videogame with ID ${request.params.idVideogame} not found` });
         }
         videogameDetails = DBcall;
+        return response.json(videogameDetails);
+
     } else {
         // get it from the API
         const APIcall = await getDetailsFromAPI(request.params.idVideogame);
         if (APIcall.detail && APIcall.detail === "Not found.") {
-            response.status(404).json({ error: `API Videogame with ID ${request.params.idVideogame} not found` });
+            return response.status(404).json({ error: `API Videogame with ID ${request.params.idVideogame} not found` });
         }
         videogameDetails = {
             id: APIcall.id,
@@ -156,7 +188,7 @@ router.get('/videogame/:idVideogame', async (request, response) => {
             platforms: APIcall.platforms
         };
     }
-    response.json(videogameDetails);
+    return response.json(videogameDetails);
 });
 
 router.get('/genres', async (request, response) => {
@@ -164,7 +196,6 @@ router.get('/genres', async (request, response) => {
     let genres = await Genre.findAll();
 
     if (genres.length === 0) {
-        console.log("called API");
         const APIcall = await callAPI(getGenresURL);
         genres = APIcall.results.map((genre) => {
             // map only needed data
@@ -180,13 +211,45 @@ router.get('/genres', async (request, response) => {
         });
     }
 
-    response.json(genres);
+    return response.json(genres);
 });
 
-router.post('/videogames', (request, response) => {
+router.post('/videogame', async (request, response) => {
     // create videogame, save to DB and return success
     // request.body.*
-    response.sendStatus().json();
+    const { name, description, launchDate, rating, platforms } = request.body;
+    // we shouldn't be able to get to POST without going through the previously validated react-form but it's safer to check everything's in place
+    if (!name || !description || !platforms) {
+        return response.status(400).json({ "error": "Faltan datos" });
+    }
+    try {
+        const alreadyExists = await Videogame.findAll({
+            where: {
+                name: name,
+                description: description,
+                launchDate: launchDate,
+                platforms: platforms
+            }
+        });
+        if (alreadyExists.length > 0) {
+            return response.status(400).json({ "error": "game already exists" });
+        }
+        const newGame = await Videogame.create(request.body);
+        response.status(201).json({
+            id: newGame.id,
+            name: newGame.name,
+            description: newGame.description,
+            launchDate: newGame.launchDate,
+            rating: newGame.rating,
+            platforms: newGame.platforms
+        });
+    } catch (error) {
+        const prettyError = {
+            "error": error.errors.map((e) => { return { [e.type]: e.message } })
+        }
+
+        return response.status(400).json(prettyError);
+    }
 });
 
 module.exports = router;

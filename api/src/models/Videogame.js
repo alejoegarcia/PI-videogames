@@ -6,7 +6,6 @@ const availablePlatforms = [
 // Exportamos una funcion que define el modelo
 // Luego le injectamos la conexion a sequelize.
 module.exports = (sequelize) => {
-    // name, descrip, launch, rating, platforms
     return sequelize.define('videogame', {
         // TODO: use this regex /^\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$/g to recognize local games
         // or use ?source=local in the query
@@ -77,9 +76,8 @@ module.exports = (sequelize) => {
             type: DataTypes.FLOAT,
             allowNull: true,
             validate: {
-                // isFloat: true,
                 isBetweenZeroAndFive(value) {
-                    if (value < 0 || value > 5) {
+                    if (typeof value !== 'number' || value < 0 || value > 5) {
                         throw new Error("Rating should be between zero and five");
                     }
                 }
@@ -96,16 +94,11 @@ module.exports = (sequelize) => {
                     }
                     for (let i = 0; i < values.length; i++) {
                         if (!availablePlatforms.includes(values[i])) {
-                            throw new Error("There's an incorrect platform");
+                            throw new Error(`There's an invalid platform: ${values[i]}`);
                         }
                     }
                 }
             }
-        },
-        isFromExternalAPI: {
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: false
-        } // ! might not need this, use ?source=local on query
+        }
     });
 }
