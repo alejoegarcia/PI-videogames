@@ -11,24 +11,24 @@ const initialState = {
     gameDetail: {}
 };
 
-export default async function rootReducer(state = initialState, action) {
+export default function rootReducer(state = initialState, action) {
     switch (action.type) {
         case GET_VIDEOGAMES:
             if (initialState.gamesFromAPI.length === 0 || action.payload) {
                 if (action.payload === "local") {
                     return {
                         ...state,
-                        gamesFromDB: await fetch("http://localhost:3001/videogames?source=local")
+                        gamesFromDB: action.payload
                     };
                 } else if (action.payload === "external") {
                     return {
                         ...state,
-                        gamesFromAPI: await fetch("http://localhost:3001/videogames?source=external")
+                        gamesFromAPI: action.payload
                     };
                 } else {
                     return {
                         ...state,
-                        allGames: await fetch("http://localhost:3001/videogames")
+                        allGames: action.payload
                     };
                 }
             }

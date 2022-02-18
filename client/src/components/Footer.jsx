@@ -1,6 +1,6 @@
 import React from 'react'
 
-export const Footer = () => {
+export default function Footer() {
   return (
     <div>
         <h5>Background image credit</h5>
