@@ -45,7 +45,9 @@ async function getVideogamesFromAPI(paginatedURL, alreadyFetchedGames = 0, gameN
                 id: element.id, // we also get the id to include it in the link to the game's details
                 name: element.name,
                 image: element.background_image,
-                genres: element.genres
+                genres: element.genres,
+                rating: element.rating,
+                platforms: element.platforms
             });
         }
 
