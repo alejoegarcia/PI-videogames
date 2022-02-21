@@ -89,29 +89,9 @@ async function getGenresFromAPI() {
 }
 // #endregion API
 
-// #region data manipulation
-
-function splitInChunks(array) {
-    const chunkSize = 15;
-    return array.reduce((result, element, index) => {
-
-        const chunkIndex = Math.floor(index / chunkSize);
-
-        if (!result[chunkIndex]) {
-            result[chunkIndex] = [];
-        }
-
-        result[chunkIndex].push(element);
-
-        return result;
-    }, []);
-}
-// #endregion data manipulation
-
 // #region exports
 module.exports = {
     getVideogamesFromAPI,
     getDetailsFromAPI,
-    getGenresFromAPI,
-    splitInChunks
+    getGenresFromAPI
 };

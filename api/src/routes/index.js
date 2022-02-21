@@ -6,8 +6,7 @@ const { Videogame, Genre } = require('../db.js');
 const {
     getVideogamesFromAPI,
     getDetailsFromAPI,
-    getGenresFromAPI,
-    splitInChunks
+    getGenresFromAPI
 } = require("../utils.js");
 
 // #endregion imports
@@ -85,8 +84,7 @@ router.get('/videogames', async (request, response) => {
         }
     }
 
-    // return the videogames in 15-games chunks (pagination-ready)
-    return response.json(splitInChunks(videogames));
+    return response.json(videogames);
 });
 
 router.get('/videogame/:idVideogame', async (request, response) => {
