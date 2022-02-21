@@ -1,14 +1,16 @@
 import {
     GET_VIDEOGAMES,
     GET_DETAILS,
-    POST_VIDEOGAME
+    POST_VIDEOGAME,
+    GET_GENRES
 } from "../actions/index.js";
 
 const initialState = {
     allGames: [],
     gamesFromDB: [],
     gamesFromAPI: [],
-    gameDetail: {}
+    gameDetail: {},
+    genres: []
 };
 
 export default function rootReducer(state = initialState, action) {
@@ -43,6 +45,11 @@ export default function rootReducer(state = initialState, action) {
             newState.allGames.push(action.payload);
             newState.gamesFromDB.push(action.payload);
             return newState;
+        case GET_GENRES:
+            return {
+                ...state,
+                genres: action.payload
+            };
         default:
             return { ...state };
     }

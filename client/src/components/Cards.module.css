@@ -1,12 +1,20 @@
 .cards {
-    display: grid;
+    display: inline-grid;
     grid-template-columns: repeat(2, 1fr);
-    grid-gap: 10px;
+    grid-gap: 75px;
     grid-auto-rows: minmax(0px, 1fr);
-    /* display: -webkit-flex;
+}
+
+.pagination {
+    display: inline-flex;
+    max-width: 500px;
+}
+
+.pagBtn {
+    margin: auto;
     display: flex;
-    -webkit-flex-direction: row;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between; */
+}
+
+.numberBtn {
+    margin: 5px;
 }

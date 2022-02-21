@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import s from "./Card.module.css"; // TODO: see why the styles make it laggy
+import Genre from "./Genre";
+import s from "./Card.module.css";
 
 export default function Card(props) {
     return (
@@ -17,36 +18,19 @@ export default function Card(props) {
                 <div className={s.desc}>
                     <h6 className={s.primaryText}>{props.game.name}</h6>
                     <hr className={s.divider} />
-                    <h6 className={s.secondaryText}>
-                        {props.game.description}
-                    </h6>
+                    {props.game.description && (
+                        <h6 className={s.secondaryText}>
+                            {props.game.description}
+                        </h6>
+                    )}
                 </div>
-                <button className={s.primaryText}>see details</button>
+                <button className={s.primaryText}> <Link to={``}></Link> see details</button>
                 <div className={s.details}>
-                    {/* {props.game.genres.map((genre) => {
-                        return (
-                            <div className={s.rating}>
-                                <h6 className={s.secondaryText}>{genre}</h6>
-                                <hr className={s.divider} />
-                            </div>
-                        );
-                    })} */}
+                    {props.game.genres.map((genre) => {
+                        return <Genre name={genre.name} key={genre.id}></Genre>;
+                    })}
                 </div>
             </div>
-            {/* TODO: export this to Genres.jsx */}
-            {/* <div className={s.rating}>
-                    <h6 className={s.secondary-text}>Action</h6>
-                    <hr className={s.divider} />
-                </div>
-                <div className={s.rating}>
-                    <h6 className={s.secondary-text}>Adventure</h6>
-                    <hr className={s.divider} />
-                </div>
-                <div className={s.rating}>
-                    <h6 className={s.secondary-text}>Arcade</h6>
-                    <hr className={s.divider} />
-                </div> */}
-            {/* TODO: export this to Genres.jsx */}
         </div>
     );
 }

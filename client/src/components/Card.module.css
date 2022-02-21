@@ -16,8 +16,8 @@ body{
     height: auto;
     text-align: center;
     background-color: rgba(255, 255, 255, 0.06);
-    -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px);
+    /* -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px); */
     border-radius: 8px;
     -webkit-box-shadow: 20px 20px 22px rgba(0, 0, 0, 0.2);
     box-shadow: 20px 20px 22px rgba(0, 0, 0, 0.2);
@@ -42,8 +42,8 @@ body{
     margin: auto;
 
     background-color: rgba(255, 255, 255, 0.06);
-    -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px);
+    /* -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px); */
 }
 
 .cardImage img {
@@ -74,8 +74,8 @@ body{
     -ms-grid-columns: auto auto;
     grid-template-columns: auto auto;
     background-color: rgba(255, 255, 255, 0.06);
-    -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px);
+    /* -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px); */
     /* bottom: 0; */
     border-radius: 0 0 8px 8px;
 }
@@ -89,7 +89,7 @@ body{
     border-right: 2px solid rgba(255, 255, 255, 0.08);
 } */
 
-button {
+.card button {
     width: 80%;
     padding: 5px 0;
     margin: 10px 0px;
@@ -98,8 +98,8 @@ button {
     border-radius: 5px;
     border: none;
     background-color: rgba(255, 255, 255, 0.06);
-    -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px);
+    /* -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px); */
 }
 
 a {
