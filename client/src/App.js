@@ -9,11 +9,8 @@ import { useSearchParams } from "react-router-dom";
 import s from './App.css';
 
 function App() {
-    let [searchParams, _] = useSearchParams();
-    searchParams.forEach((sp) => console.log(sp));
     return (
         <div className="App">
-            {/* <Nav></Nav> */}
             <Routes>
                 {/* <Route path="/" element={<Landing/>} /> */}
                 <Route path="/home" element={<Cards />} />

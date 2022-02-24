@@ -8,15 +8,10 @@ export const GET_DETAILS = "GET_DETAILS";
 export const POST_VIDEOGAME = "POST_VIDEOGAME";
 export const GET_GENRES = "GET_GENRES";
 
-export function getVideogames(source, name) {
-    let preurl = source ?
-        `${ALL_VIDEOGAMES_URL}?source=${source}`
+export function getVideogames(name) {
+    const url = name ?
+        `${ALL_VIDEOGAMES_URL}?name=${name}`
         : ALL_VIDEOGAMES_URL;
-    const url = source && name ?
-        `${preurl}&name=${name}`
-        : name ?
-            `${preurl}?name=${name}`
-            : preurl;
     console.log("url", url);
     return async (dispatch) => {
         function onSuccess(success) {

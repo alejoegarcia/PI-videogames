@@ -7,33 +7,18 @@ import {
 
 const initialState = {
     allGames: [],
-    gamesFromDB: [],
-    gamesFromAPI: [],
     gameDetail: {},
     genres: [],
-    gamesSource: undefined
 };
 
 export default function rootReducer(state = initialState, action) {
     switch (action.type) {
         case GET_VIDEOGAMES:
-            if (initialState.gamesFromAPI.length === 0 || action.payload) {
-                if (action.payload === "local") {
-                    return {
-                        ...state,
-                        gamesFromDB: action.payload
-                    };
-                } else if (action.payload === "external") {
-                    return {
-                        ...state,
-                        gamesFromAPI: action.payload
-                    };
-                } else {
-                    return {
-                        ...state,
-                        allGames: action.payload
-                    };
-                }
+            if (initialState.allGames.length === 0 || action.payload) {
+                return {
+                    ...state,
+                    allGames: action.payload
+                };
             }
             return { ...state };
         case GET_DETAILS:

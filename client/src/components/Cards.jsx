@@ -9,24 +9,29 @@ import Button from "./Button";
 
 // style import
 import s from "./Cards.module.css";
+import Form from "./Form";
 
-const gamesPerPage = 15;
-const ORDER_A_Z = "ASC_ALPHA";
-const ORDER_Z_A = "DESC_ALPHA";
-const ORDER_1_5 = "ASC_RATING";
-const ORDER_5_1 = "DESC_RATING";
+// constants import
+import {
+    gamesPerPage,
+    ORDER_1_5,
+    ORDER_5_1,
+    ORDER_A_Z,
+    ORDER_Z_A,
+    SOURCE_API,
+    SOURCE_DB,
+} from "../assets/constants";
 
 function mapStateToProps(state) {
     return {
         games: state.allGames,
         genres: state.genres,
-        gamesSource: state.gamesSource,
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        getVideogames: () => dispatch(getVideogames()),
+        getVideogames: (source, name) => dispatch(getVideogames(source, name)),
         getGenres: () => dispatch(getGenres()),
     };
 }
@@ -35,9 +40,10 @@ function Cards(props) {
     const [currentPage, setCurrentPage] = useState(0);
     const [data, setData] = useState(props.games);
     const [filters, setFilters] = useState([]);
-    const [useAllGames, setUseAllGames] = useState(true);
     const [sortAlphabetically, setSortAlphabetically] = useState(undefined);
     const [sortByRating, setSortByRating] = useState(undefined);
+    const [gamesSource, setGamesSource] = useState(undefined);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         async function fetchData() {
@@ -59,6 +65,7 @@ function Cards(props) {
     }, [currentPage]);
 
     useEffect(() => {
+        if (loading && data.length > 0) setLoading(!loading);
         setCurrentPage(0);
         // ? is this needed?
         /* setFilters([]);
@@ -70,14 +77,25 @@ function Cards(props) {
     useEffect(() => {
         // setData(filterData());
         filterAndSort();
-    }, [filters, sortAlphabetically, sortByRating]);
+    }, [filters, sortAlphabetically, sortByRating, gamesSource]);
 
     function filterAndSort() {
-        setData(sortData(filterData()));
+        setData(sortData(filterData(excludeDataSource())));
     }
-    function filterData() {
+
+    function excludeDataSource() {
+        let newData = [...props.games];
+        if (gamesSource === SOURCE_DB) {
+            newData = newData.filter((game) => isNaN(game.id));
+        } else if (gamesSource === SOURCE_API) {
+            newData = newData.filter((game) => !isNaN(game.id));
+        }
+        return newData;
+    }
+    function filterData(argsData) {
         let filtered =
-            useAllGames || filters.length === 0 ? props.games : [...data];
+            // useAllGames || filters.length === 0 ? props.games : [...argsData];
+            argsData;
         for (let filter of filters) {
             filtered = filtered.filter((game) => {
                 if (game.genres.filter((g) => g.name === filter).length === 0) {
@@ -91,7 +109,7 @@ function Cards(props) {
 
     function sortData(argsData) {
         // create a different object in memory via destructuring so React picks up the state change and also triggers useEffect
-        console.log(sortAlphabetically, sortByRating);
+        console.log(sortAlphabetically, sortByRating, gamesSource);
         if (sortAlphabetically !== undefined || sortByRating !== undefined) {
             const sortBy = sortAlphabetically ? "name" : "rating";
             let backup = [...argsData];
@@ -140,10 +158,8 @@ function Cards(props) {
 
     function onGenresChange(e) {
         if (filters.includes(e.target.value)) {
-            setUseAllGames(true);
             setFilters(filters.filter((f) => f !== e.target.value));
         } else {
-            setUseAllGames(false);
             setFilters([...filters, e.target.value]);
         }
     }
@@ -162,67 +178,43 @@ function Cards(props) {
     }
 
     // TODO: change game source, check if gfDB or gfAPI is already populated
-    // function onSourceChange(e) {
-    //     if (e.target.value !== "0") {
-    //         setGamesSource(e.target.value);
-    //     }
-    // }
+    function onSourceChange(e) {
+        if (e.target.value !== "0") {
+            setGamesSource(e.target.value);
+        } else {
+            setGamesSource(undefined);
+        }
+    }
 
-    if (props.games.length > 0 && props.genres.length > 0) {
-        getPaginatedData();
+    // if (props.games.length > 0 && props.genres.length > 0) {
+    if (loading) {
+        return <div>Loading...</div>;
+    } else {
+        const paginatedData = getPaginatedData();
+        const totalPages = getPagination();
         return (
             <div>
                 <div className="options">
-                    <div className="filters">
-                        <form action="#">
-                            <button
-                                type="button"
-                                onClick={() => setFilters([])}
-                            >
-                                Limpiar filtros
-                            </button>
-                            <select
-                                id="genres-picker"
-                                name="genres-picker"
-                                multiple={true}
-                                value={filters}
-                                onChange={(e) => onGenresChange(e)}
-                            >
-                                {props.genres.map((genre) => {
-                                    return (
-                                        <option
-                                            key={genre.id}
-                                            value={genre.name}
-                                        >
-                                            {genre.name}
-                                        </option>
-                                    );
-                                })}
-                            </select>
-                        </form>
-                    </div>
-                    <div className="sort">
-                        <select
-                            onChange={onSortingChange}
-                            id="change-sort"
-                            name="order"
-                        >
-                            <option value={0}>Ordenar</option>
-                            <option value={ORDER_A_Z}>A-Z</option>
-                            <option value={ORDER_Z_A}>Z-A</option>
-                            <option value={ORDER_1_5}>1-5</option>
-                            <option value={ORDER_5_1}>5-1</option>
-                        </select>
+                    <div className="filter-sort-form">
+                        <Form
+                            setFilters={setFilters}
+                            onSourceChange={onSourceChange}
+                            onGenresChange={onGenresChange}
+                            onSortingChange={onSortingChange}
+                            genres={props.genres}
+                            filters={filters}
+                            setLoading={setLoading}
+                        />
                     </div>
                 </div>
                 <div className={s.cards}>
-                    {getPaginatedData().map((game) => (
+                    {paginatedData.map((game) => (
                         <Card game={game} key={game.id}></Card>
                     ))}
                 </div>
                 <div className="paginationWrapper">
                     <div className={s.pagination}>
-                        {getPagination().map((_, ix) => {
+                        {totalPages.map((_, ix) => {
                             return (
                                 <div
                                     key={`pagination-${ix}`}
@@ -245,8 +237,8 @@ function Cards(props) {
                                         click={() => setPageNumber(ix)}
                                         text={ix}
                                     ></Button>
-                                    {data.length > gamesPerPage &&
-                                        ix === currentPage && (
+                                    {ix === currentPage &&
+                                        ix + 1 !== totalPages.length && (
                                             <div className={s.pagBtn}>
                                                 <Button
                                                     id="next"
@@ -263,8 +255,6 @@ function Cards(props) {
                 </div>
             </div>
         );
-    } else {
-        return <div>Loading...</div>;
     }
 }
 
