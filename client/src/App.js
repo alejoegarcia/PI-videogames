@@ -1,23 +1,23 @@
-import { Route, Routes, useSearchParams } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
 // components imports
 import Cards from "./components/Cards";
 import Detail from "./components/Detail";
 import Footer from "./components/Footer";
+import { useSearchParams } from "react-router-dom";
 // styles imports
 import s from './App.css';
-import { useSelector } from "react-redux";
 
 function App() {
-    const [games] = useSelector((state) => state.allGames);
-    const [searchParams] = useSearchParams();
+    let [searchParams, _] = useSearchParams();
+    searchParams.forEach((sp) => console.log(sp));
     return (
         <div className="App">
             {/* <Nav></Nav> */}
             <Routes>
                 {/* <Route path="/" element={<Landing/>} /> */}
                 <Route path="/home" element={<Cards />} />
-                <Route path="/videogame/:id" element={<Detail game={games.find((game) => game.id === searchParams.get("id"))} />} />
+                <Route path="/videogame/:id" element={<Detail />} />
 
             </Routes>
             <Footer></Footer>

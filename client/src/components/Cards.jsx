@@ -11,13 +11,16 @@ import Button from "./Button";
 import s from "./Cards.module.css";
 
 const gamesPerPage = 15;
-const ORDER_ASC = "ASC";
-const ORDER_DESC = "DESC";
+const ORDER_A_Z = "ASC_ALPHA";
+const ORDER_Z_A = "DESC_ALPHA";
+const ORDER_1_5 = "ASC_RATING";
+const ORDER_5_1 = "DESC_RATING";
 
 function mapStateToProps(state) {
     return {
         games: state.allGames,
         genres: state.genres,
+        gamesSource: state.gamesSource,
     };
 }
 
@@ -33,7 +36,8 @@ function Cards(props) {
     const [data, setData] = useState(props.games);
     const [filters, setFilters] = useState([]);
     const [useAllGames, setUseAllGames] = useState(true);
-    // const [sort, setSort] = useState(ORDER_ASC);
+    const [sortAlphabetically, setSortAlphabetically] = useState(undefined);
+    const [sortByRating, setSortByRating] = useState(undefined);
 
     useEffect(() => {
         async function fetchData() {
@@ -56,11 +60,24 @@ function Cards(props) {
 
     useEffect(() => {
         setCurrentPage(0);
+        // ? is this needed?
+        /* setFilters([]);
+        setSortAlphabetically(undefined); */
+        // ? is this needed?
         // onSortingChange();
     }, [data]);
 
     useEffect(() => {
-        let filtered = useAllGames || filters.length === 0 ? props.games : data;
+        // setData(filterData());
+        filterAndSort();
+    }, [filters, sortAlphabetically, sortByRating]);
+
+    function filterAndSort() {
+        setData(sortData(filterData()));
+    }
+    function filterData() {
+        let filtered =
+            useAllGames || filters.length === 0 ? props.games : [...data];
         for (let filter of filters) {
             filtered = filtered.filter((game) => {
                 if (game.genres.filter((g) => g.name === filter).length === 0) {
@@ -69,8 +86,34 @@ function Cards(props) {
                 return true;
             });
         }
-        setData(filtered);
-    }, [filters]);
+        return filtered;
+    }
+
+    function sortData(argsData) {
+        // create a different object in memory via destructuring so React picks up the state change and also triggers useEffect
+        console.log(sortAlphabetically, sortByRating);
+        if (sortAlphabetically !== undefined || sortByRating !== undefined) {
+            const sortBy = sortAlphabetically ? "name" : "rating";
+            let backup = [...argsData];
+            if (sortBy === "name") {
+                backup.sort((a, b) =>
+                    a[sortBy]
+                        .toLowerCase()
+                        .localeCompare(b[sortBy].toLowerCase())
+                );
+            } else {
+                backup.sort((a, b) => a[sortBy] - b[sortBy]);
+            }
+            if (
+                sortAlphabetically === ORDER_Z_A ||
+                sortByRating === ORDER_5_1
+            ) {
+                backup.reverse();
+            }
+            return backup;
+        }
+        return argsData;
+    }
 
     // pagination functions
     function getPaginatedData() {
@@ -78,7 +121,6 @@ function Cards(props) {
         const startIndex = currentPage * gamesPerPage; /* - gamesPerPage */
         const endIndex = startIndex + gamesPerPage;
         return data.slice(startIndex, endIndex);
-        // setData(props.games.slice(startIndex, endIndex));
     }
 
     function getPagination() {
@@ -87,7 +129,6 @@ function Cards(props) {
     }
 
     function setNextPage() {
-        console.log(data.length, currentPage);
         setCurrentPage((page) => page + 1);
     }
     function setPreviousPage() {
@@ -99,11 +140,6 @@ function Cards(props) {
 
     function onGenresChange(e) {
         if (filters.includes(e.target.value)) {
-            console.log(
-                "f",
-                e.target.value,
-                filters.filter((f) => f !== e.target.value)
-            );
             setUseAllGames(true);
             setFilters(filters.filter((f) => f !== e.target.value));
         } else {
@@ -113,17 +149,24 @@ function Cards(props) {
     }
 
     function onSortingChange(e) {
-        // create a different object in memory via destructuring so React picks up the state change and also triggers useEffect
-        let backup = [...data].sort((a, b) =>
-            a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-        );
-        if (e.target.value === ORDER_ASC) {
-            setData(backup);
-        } else {
-            setData(backup.reverse());
+        console.log(e.target.value);
+        if (e.target.value !== "0") {
+            if (e.target.value === ORDER_A_Z || e.target.value === ORDER_Z_A) {
+                setSortAlphabetically(e.target.value);
+                setSortByRating(undefined);
+            } else {
+                setSortByRating(e.target.value);
+                setSortAlphabetically(undefined);
+            }
         }
-        console.log("bup", backup);
     }
+
+    // TODO: change game source, check if gfDB or gfAPI is already populated
+    // function onSourceChange(e) {
+    //     if (e.target.value !== "0") {
+    //         setGamesSource(e.target.value);
+    //     }
+    // }
 
     if (props.games.length > 0 && props.genres.length > 0) {
         getPaginatedData();
@@ -164,8 +207,11 @@ function Cards(props) {
                             id="change-sort"
                             name="order"
                         >
-                            <option value={ORDER_ASC} defaultChecked={true}>Ascendente</option>
-                            <option value={ORDER_DESC}>Descendente</option>
+                            <option value={0}>Ordenar</option>
+                            <option value={ORDER_A_Z}>A-Z</option>
+                            <option value={ORDER_Z_A}>Z-A</option>
+                            <option value={ORDER_1_5}>1-5</option>
+                            <option value={ORDER_5_1}>5-1</option>
                         </select>
                     </div>
                 </div>

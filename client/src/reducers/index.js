@@ -10,7 +10,8 @@ const initialState = {
     gamesFromDB: [],
     gamesFromAPI: [],
     gameDetail: {},
-    genres: []
+    genres: [],
+    gamesSource: undefined
 };
 
 export default function rootReducer(state = initialState, action) {

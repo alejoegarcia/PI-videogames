@@ -8,10 +8,16 @@ export const GET_DETAILS = "GET_DETAILS";
 export const POST_VIDEOGAME = "POST_VIDEOGAME";
 export const GET_GENRES = "GET_GENRES";
 
-export function getVideogames(source) {
-    const url = source ?
+export function getVideogames(source, name) {
+    let preurl = source ?
         `${ALL_VIDEOGAMES_URL}?source=${source}`
         : ALL_VIDEOGAMES_URL;
+    const url = source && name ?
+        `${preurl}&name=${name}`
+        : name ?
+            `${preurl}?name=${name}`
+            : preurl;
+    console.log("url", url);
     return async (dispatch) => {
         function onSuccess(success) {
             console.log(success);
@@ -35,12 +41,24 @@ export function getVideogames(source) {
 }
 
 export function getDetails(id) {
-    return async function (dispatch) {
-        const response = await fetch(`${VIDEOGAME_URL}${id}`)
-        dispatch({
-            type: GET_DETAILS,
-            payload: response
-        })
+    return async (dispatch) => {
+        function onSuccess(success) {
+            dispatch({
+                type: GET_DETAILS,
+                payload: success
+            })
+        }
+        function onError(error) {
+            console.error(error);
+        }
+        try {
+            const response = await fetch(`${VIDEOGAME_URL}${id}`);
+            const json = await response.json();
+            return onSuccess(json);
+
+        } catch (error) {
+            return onError(error);
+        }
     };
 }
 

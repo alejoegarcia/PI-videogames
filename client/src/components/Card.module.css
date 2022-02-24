@@ -12,16 +12,14 @@ body{
 .card {
     display: flex;
     width: auto;
-    /* width: var(--card-width); */
     height: auto;
     text-align: center;
     background-color: rgba(255, 255, 255, 0.06);
-    /* -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px); */
     border-radius: 8px;
     -webkit-box-shadow: 20px 20px 22px rgba(0, 0, 0, 0.2);
     box-shadow: 20px 20px 22px rgba(0, 0, 0, 0.2);
     font-family: 'Poppins', sans-serif;
+    min-height: 30vh;
 }
 
 .cardInfo {
@@ -31,23 +29,15 @@ body{
 }
 
 .cardImage {
-    /* width: var(--card-width) / 4; */
     width: auto;
     height: auto;
-    /* height: var(--card-width) / 4; */
-    /* height: calc(var(--card-width) - 0.5 * var(--card-img-margin)); */
-    /* border-radius: 50%; */
     display: flex;
-    /* margin: var(--card-img-margin) auto; */
     margin: auto;
 
     background-color: rgba(255, 255, 255, 0.06);
-    /* -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px); */
 }
 
 .cardImage img {
-    /* border-radius: 50%; */
     margin: auto;
 }
 
@@ -74,20 +64,12 @@ body{
     -ms-grid-columns: auto auto;
     grid-template-columns: auto auto;
     background-color: rgba(255, 255, 255, 0.06);
-    /* -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px); */
-    /* bottom: 0; */
     border-radius: 0 0 8px 8px;
 }
 
 .details>div {
     text-align: center;
-    /* border-bottom: 2px solid rgba(255, 255, 255, 0.08); */
 }
-/*
-.details>div:first-child {
-    border-right: 2px solid rgba(255, 255, 255, 0.08);
-} */
 
 .card button {
     width: 80%;
@@ -107,8 +89,6 @@ a {
     font-family: "Poppins", sans-serif;
     font-weight: 400;
     letter-spacing: 0.5px;
-    /* right: 20px;
-    top: 20px; */
     text-decoration: none;
     font-size: 14px;
 }
@@ -119,4 +99,8 @@ a {
     opacity: 0.1;
     outline: none;
     margin: auto;
+}
+
+.genre {
+    margin: 5px;
 }

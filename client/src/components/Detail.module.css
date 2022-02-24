@@ -1,0 +1,15 @@
+/* .heroImage {
+    background-color: #333;
+} */
+.heroImage img {
+    width: 50vw;
+    height: auto;
+}
+
+.releaseAndRating {
+    display: inline-flex;
+    width: 30vw;
+}
+.releaseAndRating div {
+    margin: auto;
+}
