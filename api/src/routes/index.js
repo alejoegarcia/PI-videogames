@@ -122,7 +122,8 @@ router.get('/videogame/:idVideogame', async (request, response) => {
                 genres: APIcall.genres,
                 description: APIcall.description,
                 launchDate: APIcall.released,
-                platforms: APIcall.platforms
+                platforms: APIcall.platforms,
+                rating: APIcall.rating
             };
 
         } catch (error) {
