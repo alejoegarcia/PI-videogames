@@ -77,7 +77,7 @@ module.exports = (sequelize) => {
             allowNull: true,
             validate: {
                 isBetweenZeroAndFive(value) {
-                    if (typeof value !== 'number' || value < 0 || value > 5) {
+                    if ((value && typeof value !== 'number') || value < 0 || value > 5) {
                         throw new Error("Rating should be between zero and five");
                     }
                 }
