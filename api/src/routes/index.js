@@ -217,7 +217,9 @@ router.post("/videogame", async (request, response) => {
     // create videogame, save to DB and return success
     // request.body.*
     const { name, description, launchDate, rating, platforms, genres } =
-        request.body;
+        request.body.game;
+    console.log("request", request.body.game);
+    console.log("body", request.body);
     // we shouldn't be able to get to POST without going through the previously validated react-form but it's safer to check everything's in place
     if (!name || !description || !platforms) {
         return response.status(400).json({ error: "Faltan datos" });
@@ -227,16 +229,14 @@ router.post("/videogame", async (request, response) => {
             where: {
                 name: name,
                 description: description,
-                launchDate: launchDate,
-                rating: rating,
                 platforms: platforms,
-                genres: genres,
             },
         });
+        console.log("alreadyExists", alreadyExists);
         if (alreadyExists.length > 0) {
             return response.status(400).json({ error: "game already exists" });
         }
-        const newGame = await Videogame.create(request.body);
+        const newGame = await Videogame.create(request.body.game);
         response.status(201).json({
             id: newGame.id,
             name: newGame.name,
@@ -246,6 +246,7 @@ router.post("/videogame", async (request, response) => {
             platforms: newGame.platforms,
         });
     } catch (error) {
+        console.log("error, ", error);
         const prettyError = {
             error: error.errors.map((e) => {
                 return { [e.type]: e.message };

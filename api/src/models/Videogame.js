@@ -56,7 +56,7 @@ module.exports = (sequelize) => {
 
                         // Check the ranges of month and year
                         if (year < 1958 || year > new Date().getFullYear() || month <= 0 || month > 12) {
-                            throw new Error("Date is not valid month" + month);
+                            throw new Error("Date is not valid");
                         }
 
                         var daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -65,7 +65,7 @@ module.exports = (sequelize) => {
                             daysInMonth[1] = 29;
 
                         if (day < 0 || day > daysInMonth[month - 1]) {
-                            throw new Error("Date is not valid days");
+                            throw new Error("Date is not valid");
                         }
                     }
 
@@ -77,7 +77,7 @@ module.exports = (sequelize) => {
             allowNull: true,
             validate: {
                 isBetweenZeroAndFive(value) {
-                    if ((value && typeof value !== 'number') || value < 0 || value > 5) {
+                    if ((value && isNaN(value)) || value < 0 || value > 5) {
                         throw new Error("Rating should be between zero and five");
                     }
                 }
