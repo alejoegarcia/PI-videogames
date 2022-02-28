@@ -20,19 +20,14 @@ export default function Form({
     onSortingChange,
     filters,
     genres,
+    userSearch,
+    setUserSearch,
     setLoading,
 }) {
-    const [userSearch, setUserSearch] = useState("");
     const dispatch = useDispatch();
 
     function handleChange(e) {
         setUserSearch(e.target.value);
-    }
-
-    function resetSearch(e) {
-        e.preventDefault();
-        setLoading(true);
-        dispatch(getVideogames());
     }
 
     function handleSubmit(e) {

@@ -1,10 +1,8 @@
 .App {
     text-align: center;
-    outline: 2px solid red;
-    background-color: #ffffff20;
+    background-color: #333380;
     backdrop-filter: blur(2px);
     -webkit-backdrop-filter: blur(2px);
-    height: 100vh;
 }
 
 .App-logo {

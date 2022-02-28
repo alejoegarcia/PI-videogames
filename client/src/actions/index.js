@@ -7,15 +7,15 @@ export const GET_VIDEOGAMES = "GET_VIDEOGAMES";
 export const GET_DETAILS = "GET_DETAILS";
 export const POST_VIDEOGAME = "POST_VIDEOGAME";
 export const GET_GENRES = "GET_GENRES";
+export const ADD_ERROR = "ADD_ERROR";
 
 export function getVideogames(name) {
     const url = name ?
         `${ALL_VIDEOGAMES_URL}?name=${name}`
         : ALL_VIDEOGAMES_URL;
-    console.log("url", url);
+
     return async (dispatch) => {
         function onSuccess(success) {
-            console.log(success);
             dispatch({
                 type: GET_VIDEOGAMES,
                 payload: success
@@ -23,6 +23,10 @@ export function getVideogames(name) {
         }
         function onError(error) {
             console.error(error);
+            dispatch({
+                type: ADD_ERROR,
+                payload: error
+            });
         }
         try {
             const response = await fetch(url);
@@ -45,6 +49,10 @@ export function getDetails(id) {
         }
         function onError(error) {
             console.error(error);
+            dispatch({
+                type: ADD_ERROR,
+                payload: error
+            });
         }
         try {
             const response = await fetch(`${VIDEOGAME_URL}${id}`);
@@ -58,15 +66,40 @@ export function getDetails(id) {
 }
 
 export function postVideogame(game) {
-    return async function (dispatch) {
-        const response = await fetch(VIDEOGAME_URL, {
-            method: "POST",
-            body: game
-        });
-        dispatch({
-            type: POST_VIDEOGAME,
-            payload: response
-        });
+    return async (dispatch) => {
+        function onSuccess(success) {
+            console.log(success);
+            dispatch({
+                type: POST_VIDEOGAME,
+                payload: success
+            });
+        }
+        function onError(error) {
+            console.error("onerror", error);
+            dispatch({
+                type: ADD_ERROR,
+                payload: error
+            });
+        }
+        try {
+            const response = await fetch(VIDEOGAME_URL, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ "game": game })
+            });
+            const json = await response.json();
+            if (response.ok) {
+                return onSuccess(json);
+            } else {
+                return onError(json.error);
+            }
+
+        } catch (error) {
+            console.log("will throw error");
+            return onError(error);
+        }
     };
 }
 
@@ -81,6 +114,10 @@ export function getGenres() {
         }
         function onError(error) {
             console.error(error);
+            dispatch({
+                type: ADD_ERROR,
+                payload: error
+            });
         }
         try {
             const response = await fetch(GENRES_URL);

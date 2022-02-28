@@ -65,13 +65,21 @@ function Detail(props) {
                     <div className={cs.details}>
                         <h3>¿Dónde puedes jugar {props.game.name}?</h3> <br />
                         {props.game.platforms.map((platform) => {
-                            console.log(platform);
-                            return (
-                                <Genre
-                                    name={platform.platform.name}
-                                    key={`pl-${platform.platform.name}`}
-                                ></Genre>
-                            );
+                            if (typeof platform === "string") {
+                                return (
+                                    <Genre
+                                        name={platform}
+                                        key={`pl-${platform}`}
+                                    ></Genre>
+                                );
+                            } else {
+                                return (
+                                    <Genre
+                                        name={platform.platform.name}
+                                        key={`pl-${platform.platform.name}`}
+                                    ></Genre>
+                                );
+                            }
                             // return <div key={`pl-${platform.platform.name}`} className="platform">{platform.platform.name}</div>
                         })}
                     </div>

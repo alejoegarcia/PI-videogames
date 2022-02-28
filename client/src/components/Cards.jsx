@@ -9,7 +9,7 @@ import Button from "./Button";
 
 // style import
 import s from "./Cards.module.css";
-import Form from "./Form";
+import Form from "./ViewForm";
 
 // constants import
 import {
@@ -44,21 +44,23 @@ function Cards(props) {
     const [sortByRating, setSortByRating] = useState(undefined);
     const [gamesSource, setGamesSource] = useState(undefined);
     const [loading, setLoading] = useState(true);
+    const [userSearch, setUserSearch] = useState("");
 
     useEffect(() => {
-        async function fetchData() {
+        /* async function fetchData() {
             await props.getVideogames();
             await props.getGenres();
         }
         if (!props.games.length) {
             fetchData();
-            setData(props.games);
-        }
+            // setData(props.games);
+        } */
+        setData(props.games);
     }, []);
 
-    useEffect(() => {
+    /* useEffect(() => {
         setData(props.games);
-    }, [props.games]);
+    }, [props.games]); */
 
     useEffect(() => {
         window.scrollTo({ behavior: "smooth", top: "0px" });
@@ -77,7 +79,7 @@ function Cards(props) {
     useEffect(() => {
         // setData(filterData());
         filterAndSort();
-    }, [filters, sortAlphabetically, sortByRating, gamesSource]);
+    }, [props.games, filters, sortAlphabetically, sortByRating, gamesSource]);
 
     function filterAndSort() {
         setData(sortData(filterData(excludeDataSource())));
@@ -177,7 +179,6 @@ function Cards(props) {
         }
     }
 
-    // TODO: change game source, check if gfDB or gfAPI is already populated
     function onSourceChange(e) {
         if (e.target.value !== "0") {
             setGamesSource(e.target.value);
@@ -204,6 +205,8 @@ function Cards(props) {
                             genres={props.genres}
                             filters={filters}
                             setLoading={setLoading}
+                            userSearch={userSearch}
+                            setUserSearch={setUserSearch}
                         />
                     </div>
                 </div>
