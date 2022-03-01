@@ -1,6 +1,12 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { getVideogames } from "../actions";
+import React from "react";
+import { connect } from "react-redux";
+import {
+    getVideogames,
+    setFilters,
+    setGamesSource,
+    setSortAlphabetically,
+    setSortByRating,
+} from "../actions";
 
 // constants import
 import {
@@ -16,18 +22,64 @@ import {
 import Button from "./Button";
 import s from "./ViewForm.module.css";
 
-export default function Form({
-    setFilters,
-    onSourceChange,
-    onGenresChange,
-    onSortingChange,
-    filters,
+function mapStateToProps(state) {
+    return {
+        filters: state.filters,
+        genres: state.genres,
+    };
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        getVideogames: (name) => dispatch(getVideogames(name)),
+        setStateGamesSource: (source) => dispatch(setGamesSource(source)),
+        setStateFilters: (filters) => dispatch(setFilters(filters)),
+        setStateSortAlphabetically: (sort) =>
+            dispatch(setSortAlphabetically(sort)),
+        setStateSortByRating: (sort) => dispatch(setSortByRating(sort)),
+    };
+}
+
+function Form({
+    getVideogames,
     genres,
+    filters,
     userSearch,
     setUserSearch,
     setLoading,
+    setStateGamesSource,
+    setStateFilters,
+    setStateSortAlphabetically,
+    setStateSortByRating,
 }) {
-    const dispatch = useDispatch();
+    function onGenresChange(e) {
+        console.log(e);
+        if (filters.includes(e.target.value)) {
+            setStateFilters(filters.filter((f) => f !== e.target.value));
+        } else {
+            setStateFilters([...filters, e.target.value]);
+        }
+    }
+
+    function onSortingChange(e) {
+        if (e.target.value !== "0") {
+            if (e.target.value === ORDER_A_Z || e.target.value === ORDER_Z_A) {
+                setStateSortAlphabetically(e.target.value);
+                setStateSortByRating(undefined);
+            } else {
+                setStateSortByRating(e.target.value);
+                setStateSortAlphabetically(undefined);
+            }
+        }
+    }
+
+    function onSourceChange(e) {
+        if (e.target.value !== "0") {
+            setStateGamesSource(e.target.value);
+        } else {
+            setStateGamesSource(undefined);
+        }
+    }
 
     function handleChange(e) {
         setUserSearch(e.target.value);
@@ -36,7 +88,7 @@ export default function Form({
     function handleSubmit(e) {
         e.preventDefault();
         setLoading(true);
-        dispatch(getVideogames(userSearch));
+        getVideogames(userSearch);
     }
     return (
         <div className={s.viewFormWrapper}>
@@ -67,7 +119,7 @@ export default function Form({
                 <button
                     type="button"
                     className="button resetFilters"
-                    onClick={() => setFilters([])}
+                    onClick={() => setStateFilters([])}
                 >
                     Limpiar filtros
                 </button>
@@ -128,3 +180,5 @@ export default function Form({
         </div>
     );
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(Form);

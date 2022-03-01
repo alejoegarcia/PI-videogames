@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import { getDetails } from "../actions";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { connect } from "react-redux";
 
 import s from "./Detail.module.css";
@@ -83,10 +83,14 @@ function Detail(props) {
                                     ></Genre>
                                 );
                             }
-                            // return <div key={`pl-${platform.platform.name}`} className="platform">{platform.platform.name}</div>
                         })}
                     </div>
                 )}
+                <div className={s.btnWrapper}>
+                    <button className="button">
+                        <Link to="/home">Regresar</Link>
+                    </button>
+                </div>
             </div>
         );
     }

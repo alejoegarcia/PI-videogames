@@ -8,6 +8,10 @@ export const GET_DETAILS = "GET_DETAILS";
 export const POST_VIDEOGAME = "POST_VIDEOGAME";
 export const GET_GENRES = "GET_GENRES";
 export const ADD_ERROR = "ADD_ERROR";
+export const SET_SOURCE = "SET_SOURCE";
+export const SET_FILTERS = "SET_FILTERS";
+export const SET_SORT_ALPHA = "SET_SORT_ALPHA";
+export const SET_SORT_RATING = "SET_SORT_RATING";
 
 export function getVideogames(name) {
     const url = name ?
@@ -124,5 +128,34 @@ export function getGenres() {
         } catch (error) {
             return onError(error);
         }
+    };
+}
+
+// for Cards and ViewForm
+export function setGamesSource(newSource) {
+    return {
+        type: SET_SOURCE,
+        payload: newSource
+    };
+}
+
+export function setFilters(newFilters) {
+    return {
+        type: SET_FILTERS,
+        payload: newFilters
+    };
+}
+
+export function setSortAlphabetically(newSort) {
+    return {
+        type: SET_SORT_ALPHA,
+        payload: newSort
+    };
+}
+
+export function setSortByRating(newSort) {
+    return {
+        type: SET_SORT_RATING,
+        payload: newSort
     };
 }

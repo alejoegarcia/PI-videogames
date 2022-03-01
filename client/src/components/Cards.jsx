@@ -1,6 +1,13 @@
 import { React, useEffect, useState } from "react";
 
-import { getGenres, getVideogames } from "../actions";
+import {
+    getGenres,
+    getVideogames,
+    setFilters,
+    setGamesSource,
+    setSortAlphabetically,
+    setSortByRating,
+} from "../actions";
 import { connect } from "react-redux";
 
 // component import
@@ -15,9 +22,7 @@ import Form from "./ViewForm";
 // constants import
 import {
     gamesPerPage,
-    ORDER_1_5,
     ORDER_5_1,
-    ORDER_A_Z,
     ORDER_Z_A,
     SOURCE_API,
     SOURCE_DB,
@@ -26,29 +31,39 @@ import {
 function mapStateToProps(state) {
     return {
         games: state.allGames,
-        genres: state.genres,
+        gamesSource: state.source,
+        filters: state.filters,
+        sortAlpha: state.sortAlpha,
+        sortRating: state.sortRating,
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        getVideogames: (source, name) => dispatch(getVideogames(source, name)),
+        getVideogames: () => dispatch(getVideogames()),
         getGenres: () => dispatch(getGenres()),
+        setGamesSource: (source) => dispatch(setGamesSource(source)),
+        setFilters: (filters) => dispatch(setFilters(filters)),
+        setSortAlphabetically: (sort) => dispatch(setSortAlphabetically(sort)),
+        setSortByRating: (sort) => dispatch(setSortByRating(sort)),
     };
 }
 
-function Cards(props) {
+function Cards({
+    games,
+    gamesSource,
+    filters,
+    sortAlpha,
+    sortRating,
+    getVideogames,
+}) {
     const [currentPage, setCurrentPage] = useState(0);
-    const [data, setData] = useState(props.games);
-    const [filters, setFilters] = useState([]);
-    const [sortAlphabetically, setSortAlphabetically] = useState(undefined);
-    const [sortByRating, setSortByRating] = useState(undefined);
-    const [gamesSource, setGamesSource] = useState(undefined);
+    const [data, setData] = useState(games);
     const [loading, setLoading] = useState(true);
     const [userSearch, setUserSearch] = useState("");
 
     async function fetchData() {
-        await props.getVideogames();
+        await getVideogames();
     }
 
     useEffect(() => {
@@ -57,7 +72,7 @@ function Cards(props) {
             fetchData();
             // setData(props.games);
         } */
-        setData(props.games);
+        setData(games);
     }, []);
 
     useEffect(() => {
@@ -70,16 +85,16 @@ function Cards(props) {
     }, [data]);
 
     useEffect(() => {
-        if (props.games.error) {
+        if (games.error) {
             alert("No encontramos lo que buscabas :/");
             fetchData();
         } else {
             setData(sortData(filterData(excludeDataSource())));
         }
-    }, [props.games, filters, sortAlphabetically, sortByRating, gamesSource]);
+    }, [games, filters, sortAlpha, sortRating, gamesSource]);
 
     function excludeDataSource() {
-        let newData = [...props.games];
+        let newData = [...games];
         if (gamesSource === SOURCE_DB) {
             newData = newData.filter((game) => isNaN(game.id));
         } else if (gamesSource === SOURCE_API) {
@@ -88,9 +103,7 @@ function Cards(props) {
         return newData;
     }
     function filterData(argsData) {
-        let filtered =
-            // useAllGames || filters.length === 0 ? props.games : [...argsData];
-            argsData;
+        let filtered = argsData;
         for (let filter of filters) {
             filtered = filtered.filter((game) => {
                 if (game.genres.filter((g) => g.name === filter).length === 0) {
@@ -104,8 +117,8 @@ function Cards(props) {
 
     function sortData(argsData) {
         // create a different object in memory via destructuring so React picks up the state change and also triggers useEffect
-        if (sortAlphabetically !== undefined || sortByRating !== undefined) {
-            const sortBy = sortAlphabetically ? "name" : "rating";
+        if (sortAlpha !== undefined || sortRating !== undefined) {
+            const sortBy = sortAlpha ? "name" : "rating";
             let backup = [...argsData];
             if (sortBy === "name") {
                 backup.sort((a, b) =>
@@ -116,10 +129,7 @@ function Cards(props) {
             } else {
                 backup.sort((a, b) => a[sortBy] - b[sortBy]);
             }
-            if (
-                sortAlphabetically === ORDER_Z_A ||
-                sortByRating === ORDER_5_1
-            ) {
+            if (sortAlpha === ORDER_Z_A || sortRating === ORDER_5_1) {
                 backup.reverse();
             }
             return backup;
@@ -130,7 +140,7 @@ function Cards(props) {
     // pagination functions
     function getPaginatedData() {
         const gamesPerPage = 15;
-        const startIndex = currentPage * gamesPerPage; /* - gamesPerPage */
+        const startIndex = currentPage * gamesPerPage;
         const endIndex = startIndex + gamesPerPage;
         return data.slice(startIndex, endIndex);
     }
@@ -150,49 +160,29 @@ function Cards(props) {
         setCurrentPage(parseInt(e));
     }
 
-    function onGenresChange(e) {
-        console.log(e);
-        if (filters.includes(e.target.value)) {
-            setFilters(filters.filter((f) => f !== e.target.value));
-        } else {
-            setFilters([...filters, e.target.value]);
-        }
-    }
-
-    function onSortingChange(e) {
-        if (e.target.value !== "0") {
-            if (e.target.value === ORDER_A_Z || e.target.value === ORDER_Z_A) {
-                setSortAlphabetically(e.target.value);
-                setSortByRating(undefined);
-            } else {
-                setSortByRating(e.target.value);
-                setSortAlphabetically(undefined);
-            }
-        }
-    }
-
-    function onSourceChange(e) {
-        if (e.target.value !== "0") {
-            setGamesSource(e.target.value);
-        } else {
-            setGamesSource(undefined);
-        }
-    }
-
     if (loading) {
         return <Loader></Loader>;
+    } else if (data.length === 0) {
+        return (
+            <div>
+                <Form
+                    setLoading={setLoading}
+                    userSearch={userSearch}
+                    setUserSearch={setUserSearch}
+                />
+                <h2>
+                    No hay juegos que coincidan con los filtros que has agregado
+                    :/
+                </h2>
+                <p>Intenta quitar algunos</p>
+            </div>
+        );
     } else {
         const paginatedData = getPaginatedData();
         const totalPages = getPagination();
         return (
             <div>
                 <Form
-                    setFilters={setFilters}
-                    onSourceChange={onSourceChange}
-                    onGenresChange={onGenresChange}
-                    onSortingChange={onSortingChange}
-                    genres={props.genres}
-                    filters={filters}
                     setLoading={setLoading}
                     userSearch={userSearch}
                     setUserSearch={setUserSearch}
