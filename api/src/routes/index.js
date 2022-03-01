@@ -54,7 +54,9 @@ router.get("/videogames", async (request, response) => {
                     include: Genre,
                 })),
             ];
+            console.log("got call", videogames);
         } catch (error) {
+            console.log("error", error);
             const e = {};
             e[error.message] = error.response.data.error;
             return response.status(404).json(e);
@@ -120,7 +122,9 @@ router.get("/videogames", async (request, response) => {
             return response.status(404).json(error);
         } */
     }
-
+    if (videogames.length === 0) {
+        return response.json({ "error": "not found" });
+    }
     return response.json(videogames);
 });
 
