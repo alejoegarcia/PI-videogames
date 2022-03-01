@@ -1,20 +1,9 @@
-/* *{
-    padding: 0;
-    margin: 0;
-    -webkit-box-sizing: border-box;
-            box-sizing: border-box;
-}
-body{
-    background: url(https://dl.dropbox.com/s/mpmu0gjtxv2x3fs/Webp.net-resizeimage%20%281%29.jpg?raw=1) no-repeat center center fixed;
-    background-size: cover;
-} */
-
 .card {
     display: flex;
     width: auto;
     height: auto;
     text-align: center;
-    background-color: rgba(255, 255, 255, 0.06);
+    background-color: rgba(255, 255, 255, 0.15);
     border-radius: 8px;
     -webkit-box-shadow: 20px 20px 22px rgba(0, 0, 0, 0.2);
     box-shadow: 20px 20px 22px rgba(0, 0, 0, 0.2);
@@ -33,9 +22,7 @@ body{
     height: auto;
     display: flex;
     margin: auto;
-
     padding: 5px;
-    /* background-color: rgba(255, 255, 255, 0.06); */
 }
 
 .cardImage img {
@@ -76,23 +63,14 @@ body{
     width: 80%;
     padding: 5px 0;
     margin: 10px 0px;
-    /* left: 10%; */
-    /* top: 240px; */
     border-radius: 5px;
     border: none;
     background-color: rgba(255, 255, 255, 0.06);
-    /* -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px); */
 }
-
+/*
 a {
-    color: #ffffff;
-    font-family: "Poppins", sans-serif;
-    font-weight: 400;
-    letter-spacing: 0.5px;
-    text-decoration: none;
-    font-size: 14px;
-}
+
+} */
 
 .divider {
     width: 80%;

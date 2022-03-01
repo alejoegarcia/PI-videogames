@@ -43,22 +43,25 @@ function Detail(props) {
     } else {
         return (
             <div className={s.detail}>
-                <div className={s.heroImage}>
-                    <img src={props.game.image} alt="Videogame" />
-                </div>
                 <div className={s.name}>
                     <h2>{props.game.name}</h2>
+                    <div className={s.heroImage}>
+                        <img src={props.game.image} alt="Videogame" />
+                    </div>
                     <div className={s.releaseAndRating}>
                         <div>{props.game.launchDate}</div>
-                        <div>{props.game.rating}</div>
+                        <div className={s.rating}>{props.game.rating}</div>
                     </div>
                 </div>
                 {props.game.description && (
                     // https://reactjs.org/docs/dom-elements.html#dangerouslysetinnerhtml
+                    // API gives description as HTML (with its tags) so we use this React
+                    // property to add it without needing preprocessing
                     <div
                         dangerouslySetInnerHTML={{
                             __html: props.game.description,
                         }}
+                        className={s.description}
                     ></div>
                 )}
                 {props.game.platforms && (

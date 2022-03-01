@@ -6,15 +6,17 @@
 }
 
 .pagination {
+    margin-top: 30px;
     display: inline-flex;
-    max-width: 500px;
+    max-width: 700px;
 }
 
 .pagBtn {
     margin: auto;
     display: flex;
+    margin: 5px;
 }
 
-.numberBtn {
-    margin: 5px;
+body {
+    background-size: contain !important;
 }

@@ -1,6 +1,7 @@
-/* .heroImage {
-    background-color: #333;
-} */
+.detail {
+    padding: 5vw;
+}
+
 .heroImage img {
     width: 50vw;
     height: auto;
@@ -12,4 +13,13 @@
 }
 .releaseAndRating div {
     margin: auto;
+}
+
+.releaseAndRating, .name {
+    text-decoration: underline 5px #FFEE88;
+}
+
+.description {
+    text-align: left;
+    width: 50vw;
 }

@@ -1,0 +1,19 @@
+.button {
+    border: none;
+    background-color: #F3F3F3;
+    text-align: center;
+    transition: .5s;
+    color: #333380;
+}
+
+.button:hover {
+    cursor: pointer;
+    background-color: #333380;
+}
+.button:hover a {
+    color: #F3F3F3;
+
+}
+.button:disabled a {
+    color: #E3E3E3
+}

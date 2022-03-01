@@ -32,7 +32,6 @@ export function getVideogames(name) {
             const response = await fetch(url);
             const json = await response.json();
             return onSuccess(json);
-
         } catch (error) {
             return onError(error);
         }
@@ -106,14 +105,12 @@ export function postVideogame(game) {
 export function getGenres() {
     return async (dispatch) => {
         function onSuccess(success) {
-            console.log(success);
             dispatch({
                 type: GET_GENRES,
                 payload: success
             });
         }
         function onError(error) {
-            console.error(error);
             dispatch({
                 type: ADD_ERROR,
                 payload: error

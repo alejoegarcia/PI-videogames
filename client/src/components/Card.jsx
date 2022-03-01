@@ -21,7 +21,6 @@ export default function Card({ game }) {
                     <hr className={s.divider} />
                 </div>
                 <button>
-                    {" "}
                     <Link
                         to={`/videogame/${game.id}`}
                         className={s.primaryText}

@@ -6,6 +6,7 @@ import { connect } from "react-redux";
 // component import
 import Card from "./Card";
 import Button from "./Button";
+import Loader from "./Loader";
 
 // style import
 import s from "./Cards.module.css";
@@ -46,11 +47,12 @@ function Cards(props) {
     const [loading, setLoading] = useState(true);
     const [userSearch, setUserSearch] = useState("");
 
+    async function fetchData() {
+        await props.getVideogames();
+    }
+
     useEffect(() => {
-        /* async function fetchData() {
-            await props.getVideogames();
-            await props.getGenres();
-        }
+        /*
         if (!props.games.length) {
             fetchData();
             // setData(props.games);
@@ -58,32 +60,23 @@ function Cards(props) {
         setData(props.games);
     }, []);
 
-    /* useEffect(() => {
-        setData(props.games);
-    }, [props.games]); */
-
     useEffect(() => {
         window.scrollTo({ behavior: "smooth", top: "0px" });
     }, [currentPage]);
 
     useEffect(() => {
-        if (loading && data.length > 0) setLoading(!loading);
+        if (loading && (data.length > 0 || data.error)) setLoading(!loading);
         setCurrentPage(0);
-        // ? is this needed?
-        /* setFilters([]);
-        setSortAlphabetically(undefined); */
-        // ? is this needed?
-        // onSortingChange();
     }, [data]);
 
     useEffect(() => {
-        // setData(filterData());
-        filterAndSort();
+        if (props.games.error) {
+            alert("No encontramos lo que buscabas :/");
+            fetchData();
+        } else {
+            setData(sortData(filterData(excludeDataSource())));
+        }
     }, [props.games, filters, sortAlphabetically, sortByRating, gamesSource]);
-
-    function filterAndSort() {
-        setData(sortData(filterData(excludeDataSource())));
-    }
 
     function excludeDataSource() {
         let newData = [...props.games];
@@ -111,7 +104,6 @@ function Cards(props) {
 
     function sortData(argsData) {
         // create a different object in memory via destructuring so React picks up the state change and also triggers useEffect
-        console.log(sortAlphabetically, sortByRating, gamesSource);
         if (sortAlphabetically !== undefined || sortByRating !== undefined) {
             const sortBy = sortAlphabetically ? "name" : "rating";
             let backup = [...argsData];
@@ -159,6 +151,7 @@ function Cards(props) {
     }
 
     function onGenresChange(e) {
+        console.log(e);
         if (filters.includes(e.target.value)) {
             setFilters(filters.filter((f) => f !== e.target.value));
         } else {
@@ -167,7 +160,6 @@ function Cards(props) {
     }
 
     function onSortingChange(e) {
-        console.log(e.target.value);
         if (e.target.value !== "0") {
             if (e.target.value === ORDER_A_Z || e.target.value === ORDER_Z_A) {
                 setSortAlphabetically(e.target.value);
@@ -187,29 +179,24 @@ function Cards(props) {
         }
     }
 
-    // if (props.games.length > 0 && props.genres.length > 0) {
     if (loading) {
-        return <div>Loading...</div>;
+        return <Loader></Loader>;
     } else {
         const paginatedData = getPaginatedData();
         const totalPages = getPagination();
         return (
             <div>
-                <div className="options">
-                    <div className="filter-sort-form">
-                        <Form
-                            setFilters={setFilters}
-                            onSourceChange={onSourceChange}
-                            onGenresChange={onGenresChange}
-                            onSortingChange={onSortingChange}
-                            genres={props.genres}
-                            filters={filters}
-                            setLoading={setLoading}
-                            userSearch={userSearch}
-                            setUserSearch={setUserSearch}
-                        />
-                    </div>
-                </div>
+                <Form
+                    setFilters={setFilters}
+                    onSourceChange={onSourceChange}
+                    onGenresChange={onGenresChange}
+                    onSortingChange={onSortingChange}
+                    genres={props.genres}
+                    filters={filters}
+                    setLoading={setLoading}
+                    userSearch={userSearch}
+                    setUserSearch={setUserSearch}
+                />
                 <div className={s.cards}>
                     {paginatedData.map((game) => (
                         <Card game={game} key={game.id}></Card>
@@ -228,8 +215,9 @@ function Cards(props) {
                                             <Button
                                                 id="prev"
                                                 key={`prev-${ix}`}
-                                                click={setPreviousPage}
+                                                to={setPreviousPage}
                                                 text="Anterior"
+                                                click={true}
                                             ></Button>
                                         </div>
                                     )}
@@ -237,8 +225,10 @@ function Cards(props) {
                                         id={`pagination-${ix}`}
                                         className={s.numberBtn}
                                         key={`pag-btn-${ix}`}
-                                        click={() => setPageNumber(ix)}
+                                        to={() => setPageNumber(ix)}
                                         text={ix}
+                                        disabled={ix === currentPage}
+                                        click={true}
                                     ></Button>
                                     {ix === currentPage &&
                                         ix + 1 !== totalPages.length && (
@@ -246,8 +236,9 @@ function Cards(props) {
                                                 <Button
                                                     id="next"
                                                     key={`next-${ix}`}
-                                                    click={setNextPage}
+                                                    to={setNextPage}
                                                     text="Siguiente"
+                                                    click={true}
                                                 ></Button>
                                             </div>
                                         )}

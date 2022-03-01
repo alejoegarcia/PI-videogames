@@ -1,15 +1,58 @@
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  /* background-image: url("./assets/images/games-collage.jpg");
-    background-size: cover; */
+    margin: 0;
+    padding: 5vw;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-image: url("./assets/images/games-collage.jpg");
+    background-size: contain;
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+        monospace;
+}
+
+h3 {
+    color: #E1D2EB;
+}
+
+.button {
+    border: none;
+    background-color: #F3F3F3;
+    text-align: center;
+    transition: .5s;
+    color: #333380;
+}
+
+.button:hover {
+    cursor: pointer;
+    background-color: #333380;
+    /* outline: 1px solid #F3F3F3; */
+}
+
+.button:hover,
+.button:hover a {
+    color: #F3F3F3;
+
+}
+
+.button:disabled a {
+    color: #E3E3E3
+}
+
+a {
+    color: #333380;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+option:checked {
+    background-color: #6871f1 !important;
+    color: #F3F3F3;
+    -webkit-text-fill-color: #F3F3F3;
 }

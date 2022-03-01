@@ -1,0 +1,36 @@
+.viewFormWrapper {
+    text-align: left;
+    padding-left: 5vw;
+    padding-top: 3vh;
+}
+
+.viewFormWrapper div {
+    margin-bottom: 10px;
+}
+
+.search button {
+    margin-left: 10px;
+}
+
+.filters {
+    display: flex;
+}
+
+.filters div {
+    margin: 10px;
+}
+
+.filters select:hover,
+.filters option:hover {
+    cursor: pointer;
+}
+
+.addGame {
+    display: flex;
+}
+.addGame h3 {
+    margin: 0px;
+}
+.addGame button {
+    margin-left: 10px;
+}

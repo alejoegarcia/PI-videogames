@@ -1,0 +1,11 @@
+.landing {
+    padding-top: 5vh;
+}
+
+.landing button a {
+    font-size: 30px !important;
+}
+
+body {
+    background-size: cover;
+}
