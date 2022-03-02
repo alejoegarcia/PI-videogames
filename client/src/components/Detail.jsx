@@ -13,7 +13,7 @@ import Button from "./Button";
 
 function mapStateToProps(state) {
     return {
-        gameData: state.gameDetail,
+        gameData: state.gameDetail, // redux-oriented
         loading: state.loading,
         errorMessages: state.errorMessages,
     };
@@ -26,27 +26,22 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
-/* async function fetchData(id) {
-    const details = await getDetails(id);
-    console.log("de", details);
-    return details;
-} */
-
 function Detail(props) {
     const [localError, setLocalError] = useState(false);
+    // const [gameData, setGameData] = useState({}); // redux-oriented
     let searchParams = useParams();
 
     useEffect(() => {
         props.setStateLoading(true);
         window.scrollTo({ behavior: "smooth", top: "0px" });
         async function fetchData() {
-            await props.getDetails(searchParams.id);
+            await props.getDetails(searchParams.id); // redux-oriented
+            // setGameData(await getDetails(searchParams.id));
         }
         fetchData();
     }, []);
 
     useEffect(() => {
-        console.log(props.gameData, "props.gameData");
         if (props.gameData && (props.gameData.name || props.errorMessages.length > 0)) {
             setLoading(false);
         }
@@ -70,7 +65,6 @@ function Detail(props) {
             </div>
         );
     } else {
-        console.log("return props.gameData ", props.gameData);
         return (
             <div className={s.detail}>
                 <div className={s.name}>

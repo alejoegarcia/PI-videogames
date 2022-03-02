@@ -4,7 +4,6 @@ import Genre from "./Genre";
 import s from "./Card.module.css";
 
 export default function Card({ game }) {
-    console.log(game);
     return (
         <div className={s.card}>
             <div className={s.cardImage}>

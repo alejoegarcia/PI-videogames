@@ -139,7 +139,6 @@ export default function CreateForm() {
     }
 
     if (loading) {
-        // console.log(history);
         return <Loader></Loader>;
     } else {
         return (

@@ -56,12 +56,12 @@ export function getVideogames(name) {
     };
 }
 
+// Detail-only state
 /* export async function getDetails(id) {
     try {
         const response = await fetch(`${VIDEOGAME_URL}${id}`);
         const json = await response.json();
         if (response.ok) {
-            console.log("detail ok", json);
             return json;
         } else {
             return json.error;
