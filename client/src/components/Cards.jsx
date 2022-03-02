@@ -1,12 +1,13 @@
 import { React, useEffect, useState } from "react";
 
 import {
+    setLoading,
     getGenres,
     getVideogames,
-    setFilters,
-    setGamesSource,
-    setSortAlphabetically,
-    setSortByRating,
+    // setFilters,
+    // setGamesSource,
+    // setSortAlphabetically,
+    // setSortByRating,
 } from "../actions";
 import { connect } from "react-redux";
 
@@ -30,6 +31,7 @@ import {
 
 function mapStateToProps(state) {
     return {
+        loading: state.loading,
         games: state.allGames,
         gamesSource: state.source,
         filters: state.filters,
@@ -40,16 +42,19 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
+        setStateLoading: (isLoading) => dispatch(setLoading(isLoading)),
         getVideogames: () => dispatch(getVideogames()),
         getGenres: () => dispatch(getGenres()),
-        setGamesSource: (source) => dispatch(setGamesSource(source)),
-        setFilters: (filters) => dispatch(setFilters(filters)),
-        setSortAlphabetically: (sort) => dispatch(setSortAlphabetically(sort)),
-        setSortByRating: (sort) => dispatch(setSortByRating(sort)),
+        // setGamesSource: (source) => dispatch(setGamesSource(source)),
+        // setFilters: (filters) => dispatch(setFilters(filters)),
+        // setSortAlphabetically: (sort) => dispatch(setSortAlphabetically(sort)),
+        // setSortByRating: (sort) => dispatch(setSortByRating(sort)),
     };
 }
 
 function Cards({
+    setStateLoading,
+    loading,
     games,
     gamesSource,
     filters,
@@ -59,7 +64,7 @@ function Cards({
 }) {
     const [currentPage, setCurrentPage] = useState(0);
     const [data, setData] = useState(games);
-    const [loading, setLoading] = useState(true);
+    // const [loading, setLoading] = useState(true);
     const [userSearch, setUserSearch] = useState("");
 
     async function fetchData() {
@@ -81,7 +86,7 @@ function Cards({
     }, [currentPage]);
 
     useEffect(() => {
-        if (loading && (data.length > 0 || data.error)) setLoading(!loading);
+        if (loading && (data.length > 0 || data.error)) setStateLoading(!loading);
         setCurrentPage(0);
     }, [data]);
 
@@ -167,7 +172,7 @@ function Cards({
         return (
             <div>
                 <Form
-                    setLoading={setLoading}
+                    // setLoading={setLoading}
                     userSearch={userSearch}
                     setUserSearch={setUserSearch}
                 />
@@ -184,7 +189,7 @@ function Cards({
         return (
             <div>
                 <Form
-                    setLoading={setLoading}
+                    // setLoading={setLoading}
                     userSearch={userSearch}
                     setUserSearch={setUserSearch}
                 />

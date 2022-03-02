@@ -52,7 +52,8 @@ router.get("/videogames", async (request, response) => {
                         },
                     },
                     // includes all the relations
-                    include: Genre,
+                    // include: [{model: Genre, through: "Videogame_Genre"}],
+                    include: [{model: Genre}]
                 })),
             ];
 
@@ -81,7 +82,8 @@ router.get("/videogames", async (request, response) => {
                     "platforms",
                 ],
                 // includes all the relations
-                include: Genre,
+                // include: [{model: Genre, through: "Videogame_Genre"}],
+                include: Genre
             });
         } catch (error) {
             return response.status(500).json(error);
@@ -121,10 +123,10 @@ router.get("/videogame/:idVideogame", async (request, response) => {
                         "platforms",
                     ],
                     // includes all the relations
-                    include: Genre,
+                    include: Genre
                 }
             );
-
+                console.log("DBCALL", DBcall);
             videogameDetails = DBcall;
         } catch (error) {
             return response
@@ -199,7 +201,6 @@ router.post("/videogame", async (request, response) => {
     // request.body.*
     const { name, description, launchDate, rating, platforms, genres } =
         request.body.game;
-
     // we shouldn't be able to get to POST without going through the previously validated react-form but it's safer to check everything's in place
     if (!name || !description || !platforms) {
         return response.status(400).json({ error: "missing data" });
@@ -219,22 +220,23 @@ router.post("/videogame", async (request, response) => {
 
         // if we have all the data and it's not in the local DB, save it
         const newGame = await Videogame.create(request.body.game);
+        genres.forEach(async (genre) => {
+            const genreFromDB = await Genre.findOne({ where: { name: genre } });
+            const s = await newGame.addGenres(genreFromDB.id);
+            console.log("s", s);
+        })
+        console.log("newGame:", newGame.toJSON());
         response.status(201).json({
             id: newGame.id,
             name: newGame.name,
+            genres: newGame.itsGenres,
             description: newGame.description,
             launchDate: newGame.launchDate,
             rating: newGame.rating,
             platforms: newGame.platforms,
         });
     } catch (error) {
-        const prettyError = {
-            error: error.errors.map((e) => {
-                return { [e.type]: e.message };
-            }),
-        };
-
-        return response.status(400).json(prettyError);
+        return response.status(400).json(error);
     }
 });
 // #endregion

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import { getDetails, resetErrorMessages } from "../actions";
+import { getDetails, resetErrorMessages, setLoading } from "../actions";
 import { Link, useParams } from "react-router-dom";
 import { connect } from "react-redux";
 
@@ -13,19 +13,20 @@ import Button from "./Button";
 
 function mapStateToProps(state) {
     return {
+        loading: state.loading,
         game: state.gameDetail,
         errorMessages: state.errorMessages,
     };
 }
 function mapDispatchToProps(dispatch) {
     return {
+        setStateLoading: (isLoading) => dispatch(setLoading(isLoading)),
         getDetails: (id) => dispatch(getDetails(id)),
         resetErrors: () => dispatch(resetErrorMessages()),
     };
 }
 
 function Detail(props) {
-    const [loading, setLoading] = useState(true);
     const [localError, setLocalError] = useState(false);
     let searchParams = useParams();
 
@@ -45,9 +46,10 @@ function Detail(props) {
             setLocalError(true);
             props.resetErrors();
         }
+        props.setStateLoading(false);
     }, [props]);
 
-    if (loading) {
+    if (props.loading) {
         return <Loader></Loader>;
     } else if (localError) {
         return (

@@ -1,6 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import {
+    setLoading,
     getVideogames,
     setFilters,
     setGamesSource,
@@ -24,6 +25,7 @@ import s from "./ViewForm.module.css";
 
 function mapStateToProps(state) {
     return {
+        loading: state.loading,
         filters: state.filters,
         genres: state.genres,
         source: state.source,
@@ -33,6 +35,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
+        setLoading: (isLoading) => dispatch(setLoading(isLoading)),
         getVideogames: (name) => dispatch(getVideogames(name)),
         setStateGamesSource: (source) => dispatch(setGamesSource(source)),
         setStateFilters: (filters) => dispatch(setFilters(filters)),
@@ -49,13 +52,14 @@ function Form({
     userSearch,
     setUserSearch,
     setLoading,
-    source, setStateGamesSource,
+    source,
+    setStateGamesSource,
     setStateFilters,
-    sort, setStateSortAlphabetically,
+    sort,
+    setStateSortAlphabetically,
     setStateSortByRating,
 }) {
     function onGenresChange(e) {
-        console.log(e);
         if (filters.includes(e.target.value)) {
             setStateFilters(filters.filter((f) => f !== e.target.value));
         } else {
@@ -76,11 +80,11 @@ function Form({
     }
 
     function onSourceChange(e) {
-        if (e.target.value !== "0") {
+        // if (e.target.value !== "0") {
             setStateGamesSource(e.target.value);
-        } else {
-            setStateGamesSource(SOURCE_ALL);
-        }
+        // } else {
+        //     setStateGamesSource(SOURCE_ALL);
+        // }
     }
 
     function handleChange(e) {
@@ -90,7 +94,12 @@ function Form({
     function handleSubmit(e) {
         e.preventDefault();
         setLoading(true);
-        getVideogames(userSearch);
+        if (e.target.id === "btnDeleteSearch") {
+            setUserSearch("");
+            getVideogames();
+        } else {
+            getVideogames(userSearch);
+        }
     }
     return (
         <div className={s.viewFormWrapper}>
@@ -115,6 +124,7 @@ function Form({
                         className="button"
                         onClick={handleSubmit}
                         disabled={userSearch === ""}
+                        id="btnDeleteSearch"
                     >
                         Borrar búsqueda
                     </button>
@@ -123,6 +133,7 @@ function Form({
                     type="button"
                     className="button resetFilters"
                     onClick={() => {
+                        setUserSearch("");
                         setStateGamesSource(SOURCE_ALL);
                         setStateFilters([]);
                         setStateSortAlphabetically(undefined);

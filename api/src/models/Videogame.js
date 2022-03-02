@@ -85,6 +85,10 @@ module.exports = (sequelize) => {
                 }
             }
         },
+        itsGenres: {
+            type: DataTypes.ARRAY(DataTypes.STRING(50)),
+            allowNull: true
+        },
         platforms: {
             type: DataTypes.ARRAY(DataTypes.STRING(20)),
             allowNull: false,

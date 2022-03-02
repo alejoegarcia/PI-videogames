@@ -4,6 +4,7 @@ import Genre from "./Genre";
 import s from "./Card.module.css";
 
 export default function Card({ game }) {
+    console.log(game);
     return (
         <div className={s.card}>
             <div className={s.cardImage}>
@@ -29,7 +30,7 @@ export default function Card({ game }) {
                     </Link>
                 </button>
                 <div className={s.details}>
-                    {game.genres.map((genre) => {
+                    {game.genres && game.genres.map((genre) => {
                         return <Genre name={genre.name} key={genre.id}></Genre>;
                     })}
                 </div>

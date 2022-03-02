@@ -4,6 +4,7 @@ const ALL_VIDEOGAMES_URL = `${BASE_URL}videogames`;
 const VIDEOGAME_URL = `${BASE_URL}videogame/`;
 const GENRES_URL = `${BASE_URL}genres/`;
 
+export const SET_LOADING = "SET_LOADING";
 export const GET_VIDEOGAMES = "GET_VIDEOGAMES";
 export const GET_DETAILS = "GET_DETAILS";
 export const POST_VIDEOGAME = "POST_VIDEOGAME";
@@ -14,6 +15,14 @@ export const SET_FILTERS = "SET_FILTERS";
 export const SET_SORT_ALPHA = "SET_SORT_ALPHA";
 export const SET_SORT_RATING = "SET_SORT_RATING";
 export const RESET_ERRORS = "RESET_ERRORS";
+export const RESET_SUCCESS = "RESET_SUCCESS";
+
+export function setLoading(isLoading) {
+    return {
+        type: SET_LOADING,
+        payload: isLoading
+    };
+}
 
 export function getVideogames(name) {
     const url = name ?
@@ -28,7 +37,6 @@ export function getVideogames(name) {
             });
         }
         function onError(error) {
-            console.error(error);
             dispatch({
                 type: ADD_ERROR,
                 payload: error
@@ -66,6 +74,7 @@ export function getDetails(id) {
             const response = await fetch(`${VIDEOGAME_URL}${id}`);
             const json = await response.json();
             if (response.ok) {
+                console.log("detail ok", json);
                 return onSuccess(json);
             } else {
                 return onError(json.error);
@@ -80,14 +89,12 @@ export function getDetails(id) {
 export function postVideogame(game) {
     return async (dispatch) => {
         function onSuccess(success) {
-            console.log(success);
             dispatch({
                 type: POST_VIDEOGAME,
                 payload: success
             });
         }
         function onError(error) {
-            console.error("onerror", error);
             dispatch({
                 type: ADD_ERROR,
                 payload: error
@@ -109,7 +116,6 @@ export function postVideogame(game) {
             }
 
         } catch (error) {
-            console.log("will throw error");
             return onError(error);
         }
     };
@@ -171,7 +177,11 @@ export function setSortByRating(newSort) {
 
 export function resetErrorMessages() {
     return {
-        type: RESET_ERRORS,
-        payload: []
+        type: RESET_ERRORS
+    };
+}
+export function resetSuccessMessages() {
+    return {
+        type: RESET_SUCCESS
     };
 }

@@ -1,10 +1,12 @@
 import {
+    SET_LOADING,
     GET_VIDEOGAMES,
     GET_DETAILS,
     POST_VIDEOGAME,
     GET_GENRES,
     ADD_ERROR,
     RESET_ERRORS,
+    RESET_SUCCESS,
     SET_SOURCE,
     SET_FILTERS,
     SET_SORT_ALPHA,
@@ -12,8 +14,9 @@ import {
 } from "../actions/index.js";
 
 const initialState = {
+    loading: true,
     allGames: [],
-    gameDetail: {},
+    // gameDetail: {},
     genres: [],
     errorMessages: [],
     successMessage: undefined,
@@ -25,6 +28,11 @@ const initialState = {
 
 export default function rootReducer(state = initialState, action) {
     switch (action.type) {
+        case SET_LOADING:
+            return {
+                ...state,
+                loading: action.payload
+            };
         case GET_VIDEOGAMES:
             if (initialState.allGames.length === 0 || action.payload) {
                 return {
@@ -56,6 +64,11 @@ export default function rootReducer(state = initialState, action) {
             return {
                 ...state,
                 errorMessages: []
+            };
+        case RESET_SUCCESS:
+            return {
+                ...state,
+                successMessage: undefined
             };
         case SET_SOURCE:
             return {
