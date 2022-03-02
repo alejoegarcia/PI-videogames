@@ -13,8 +13,8 @@ import Button from "./Button";
 
 function mapStateToProps(state) {
     return {
+        gameData: state.gameDetail,
         loading: state.loading,
-        game: state.gameDetail,
         errorMessages: state.errorMessages,
     };
 }
@@ -26,11 +26,18 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
+/* async function fetchData(id) {
+    const details = await getDetails(id);
+    console.log("de", details);
+    return details;
+} */
+
 function Detail(props) {
     const [localError, setLocalError] = useState(false);
     let searchParams = useParams();
 
     useEffect(() => {
+        props.setStateLoading(true);
         window.scrollTo({ behavior: "smooth", top: "0px" });
         async function fetchData() {
             await props.getDetails(searchParams.id);
@@ -39,7 +46,8 @@ function Detail(props) {
     }, []);
 
     useEffect(() => {
-        if (props.game && (props.game.name || props.errorMessages.length > 0)) {
+        console.log(props.gameData, "props.gameData");
+        if (props.gameData && (props.gameData.name || props.errorMessages.length > 0)) {
             setLoading(false);
         }
         if (props.errorMessages.length > 0) {
@@ -47,7 +55,7 @@ function Detail(props) {
             props.resetErrors();
         }
         props.setStateLoading(false);
-    }, [props]);
+    }, [props, props.gameData]);
 
     if (props.loading) {
         return <Loader></Loader>;
@@ -61,36 +69,37 @@ function Detail(props) {
                 </button>
             </div>
         );
-    } else
+    } else {
+        console.log("return props.gameData ", props.gameData);
         return (
             <div className={s.detail}>
                 <div className={s.name}>
-                    <h2>{props.game.name}</h2>
+                    <h2>{props.gameData.name}</h2>
                     <div className={s.heroImage}>
-                        <img src={props.game.image} alt="Videogame" />
+                        <img src={props.gameData.image} alt="Videogame" />
                     </div>
                     <div className={s.releaseAndRating}>
-                        <div>fecha de lanzamiento: {props.game.launchDate}</div>
+                        <div>fecha de lanzamiento: {props.gameData.launchDate}</div>
                         <div className={s.rating}>
-                            rating: {props.game.rating}
+                            rating: {props.gameData.rating}
                         </div>
                     </div>
                 </div>
-                {props.game.description && (
+                {props.gameData.description && (
                     // https://reactjs.org/docs/dom-elements.html#dangerouslysetinnerhtml
                     // API gives description as HTML (with its tags) so we use this React
                     // property to add it without needing preprocessing
                     <div
                         dangerouslySetInnerHTML={{
-                            __html: props.game.description,
+                            __html: props.gameData.description,
                         }}
                         className={s.description}
                     ></div>
                 )}
-                {props.game.platforms && (
+                {props.gameData.platforms && (
                     <div className={cs.details}>
-                        <h3>¿Dónde puedes jugar {props.game.name}?</h3> <br />
-                        {props.game.platforms.map((platform) => {
+                        <h3>¿Dónde puedes jugar {props.gameData.name}?</h3> <br />
+                        {props.gameData.platforms.map((platform) => {
                             if (typeof platform === "string") {
                                 return (
                                     <Genre
@@ -118,6 +127,7 @@ function Detail(props) {
                 </div>
             </div>
         );
+    }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Detail);

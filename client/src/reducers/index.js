@@ -16,7 +16,7 @@ import {
 const initialState = {
     loading: true,
     allGames: [],
-    // gameDetail: {},
+    gameDetail: {},
     genres: [],
     errorMessages: [],
     successMessage: undefined,

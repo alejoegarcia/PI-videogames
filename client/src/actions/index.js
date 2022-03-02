@@ -56,6 +56,20 @@ export function getVideogames(name) {
     };
 }
 
+/* export async function getDetails(id) {
+    try {
+        const response = await fetch(`${VIDEOGAME_URL}${id}`);
+        const json = await response.json();
+        if (response.ok) {
+            console.log("detail ok", json);
+            return json;
+        } else {
+            return json.error;
+        }
+    } catch (error) {
+        return error;
+    }
+}; */
 export function getDetails(id) {
     return async (dispatch) => {
         function onSuccess(success) {
@@ -74,7 +88,6 @@ export function getDetails(id) {
             const response = await fetch(`${VIDEOGAME_URL}${id}`);
             const json = await response.json();
             if (response.ok) {
-                console.log("detail ok", json);
                 return onSuccess(json);
             } else {
                 return onError(json.error);

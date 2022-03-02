@@ -48,12 +48,11 @@ router.get("/videogames", async (request, response) => {
                     ],
                     where: {
                         name: {
-                            [Op.like]: `%${request.query.name}%`,
+                            [Op.ilike]: `%${request.query.name}%`,
                         },
                     },
                     // includes all the relations
-                    // include: [{model: Genre, through: "Videogame_Genre"}],
-                    include: [{model: Genre}]
+                    include: [{ model: Genre, required: true }]
                 })),
             ];
 
@@ -82,8 +81,7 @@ router.get("/videogames", async (request, response) => {
                     "platforms",
                 ],
                 // includes all the relations
-                // include: [{model: Genre, through: "Videogame_Genre"}],
-                include: Genre
+                include: [{ model: Genre, required: true }]
             });
         } catch (error) {
             return response.status(500).json(error);
@@ -109,8 +107,10 @@ router.get("/videogame/:idVideogame", async (request, response) => {
 
     // if idVideogame isNaN, it can only be a (local) UUIDV4
     if (isNaN(request.params.idVideogame)) {
+        console.log("CALLING DB");
         // get it from the DB
         try {
+            console.log("TRY DB");
             const DBcall = await Videogame.findByPk(
                 request.params.idVideogame,
                 {
@@ -126,9 +126,10 @@ router.get("/videogame/:idVideogame", async (request, response) => {
                     include: Genre
                 }
             );
-                console.log("DBCALL", DBcall);
+            console.log("DBCALL === ", DBcall);
             videogameDetails = DBcall;
         } catch (error) {
+            console.log("ERROR EN ", error);
             return response
                 .status(404)
                 .json({
@@ -222,14 +223,14 @@ router.post("/videogame", async (request, response) => {
         const newGame = await Videogame.create(request.body.game);
         genres.forEach(async (genre) => {
             const genreFromDB = await Genre.findOne({ where: { name: genre } });
-            const s = await newGame.addGenres(genreFromDB.id);
+            const s = await newGame.addGenre(genreFromDB.id);
             console.log("s", s);
         })
         console.log("newGame:", newGame.toJSON());
         response.status(201).json({
             id: newGame.id,
             name: newGame.name,
-            genres: newGame.itsGenres,
+            // genres: newGame.itsGenres,
             description: newGame.description,
             launchDate: newGame.launchDate,
             rating: newGame.rating,
