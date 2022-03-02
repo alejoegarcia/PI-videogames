@@ -48,7 +48,7 @@ router.get("/videogames", async (request, response) => {
                     ],
                     where: {
                         name: {
-                            [Op.ilike]: `%${request.query.name}%`,
+                            [Op.iLike]: `%${request.query.name}%`,
                         },
                     },
                     // includes all the relations
