@@ -1,4 +1,5 @@
-const BASE_URL = "http://localhost:3001/";
+require('dotenv').config();
+const BASE_URL = process.env.REACT_APP_API || "http://localhost:3001/";
 const ALL_VIDEOGAMES_URL = `${BASE_URL}videogames`;
 const VIDEOGAME_URL = `${BASE_URL}videogame/`;
 const GENRES_URL = `${BASE_URL}genres/`;
