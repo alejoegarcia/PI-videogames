@@ -10,7 +10,8 @@ import {
     SET_SOURCE,
     SET_FILTERS,
     SET_SORT_ALPHA,
-    SET_SORT_RATING
+    SET_SORT_RATING,
+    RESET_GAME_DETAIL
 } from "../actions/index.js";
 
 const initialState = {
@@ -89,6 +90,11 @@ export default function rootReducer(state = initialState, action) {
             return {
                 ...state,
                 sortRating: action.payload
+            };
+        case RESET_GAME_DETAIL:
+            return {
+                ...state,
+                gameDetail: {}
             };
         default:
             return { ...state };

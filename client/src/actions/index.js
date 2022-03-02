@@ -16,6 +16,7 @@ export const SET_SORT_ALPHA = "SET_SORT_ALPHA";
 export const SET_SORT_RATING = "SET_SORT_RATING";
 export const RESET_ERRORS = "RESET_ERRORS";
 export const RESET_SUCCESS = "RESET_SUCCESS";
+export const RESET_GAME_DETAIL = "RESET_GAME_DETAIL";
 
 export function setLoading(isLoading) {
     return {
@@ -196,5 +197,12 @@ export function resetErrorMessages() {
 export function resetSuccessMessages() {
     return {
         type: RESET_SUCCESS
+    };
+}
+
+// reset game detail after unmount
+export function resetGameDetail() {
+    return {
+        type: RESET_GAME_DETAIL
     };
 }

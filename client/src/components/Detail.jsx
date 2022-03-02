@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 
-import { getDetails, resetErrorMessages, setLoading } from "../actions";
+import {
+    getDetails,
+    resetErrorMessages,
+    resetGameDetail,
+    setLoading,
+} from "../actions";
 import { Link, useParams } from "react-router-dom";
 import { connect } from "react-redux";
 
@@ -23,6 +28,7 @@ function mapDispatchToProps(dispatch) {
         setStateLoading: (isLoading) => dispatch(setLoading(isLoading)),
         getDetails: (id) => dispatch(getDetails(id)),
         resetErrors: () => dispatch(resetErrorMessages()),
+        resetStateGameDetail: () => dispatch(resetGameDetail()),
     };
 }
 
@@ -39,10 +45,17 @@ function Detail(props) {
             // setGameData(await getDetails(searchParams.id));
         }
         fetchData();
+
+        return function cleanup() {
+            props.resetStateGameDetail();
+        };
     }, []);
 
     useEffect(() => {
-        if (props.gameData && (props.gameData.name || props.errorMessages.length > 0)) {
+        if (
+            props.gameData &&
+            (props.gameData.name || props.errorMessages.length > 0)
+        ) {
             setLoading(false);
         }
         if (props.errorMessages.length > 0) {
@@ -73,7 +86,9 @@ function Detail(props) {
                         <img src={props.gameData.image} alt="Videogame" />
                     </div>
                     <div className={s.releaseAndRating}>
-                        <div>fecha de lanzamiento: {props.gameData.launchDate}</div>
+                        <div>
+                            fecha de lanzamiento: {props.gameData.launchDate}
+                        </div>
                         <div className={s.rating}>
                             rating: {props.gameData.rating}
                         </div>
@@ -92,7 +107,8 @@ function Detail(props) {
                 )}
                 {props.gameData.platforms && (
                     <div className={cs.details}>
-                        <h3>¿Dónde puedes jugar {props.gameData.name}?</h3> <br />
+                        <h3>¿Dónde puedes jugar {props.gameData.name}?</h3>{" "}
+                        <br />
                         {props.gameData.platforms.map((platform) => {
                             if (typeof platform === "string") {
                                 return (
