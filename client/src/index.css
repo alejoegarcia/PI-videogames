@@ -29,19 +29,19 @@ h3 {
     color: #333380;
 }
 
-.button:hover {
+.button:hover:enabled {
     cursor: pointer;
     background-color: #333380;
     /* outline: 1px solid #F3F3F3; */
 }
 
-.button:hover,
-.button:hover a {
+.button:hover:enabled,
+.button:hover:enabled a {
     color: #F3F3F3;
 
 }
 
-.button:disabled a {
+.button:disabled a, .button:disabled {
     color: #E3E3E3
 }
 

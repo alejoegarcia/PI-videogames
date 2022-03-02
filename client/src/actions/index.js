@@ -12,6 +12,7 @@ export const SET_SOURCE = "SET_SOURCE";
 export const SET_FILTERS = "SET_FILTERS";
 export const SET_SORT_ALPHA = "SET_SORT_ALPHA";
 export const SET_SORT_RATING = "SET_SORT_RATING";
+export const RESET_ERRORS = "RESET_ERRORS";
 
 export function getVideogames(name) {
     const url = name ?
@@ -35,7 +36,11 @@ export function getVideogames(name) {
         try {
             const response = await fetch(url);
             const json = await response.json();
-            return onSuccess(json);
+            if (response.ok) {
+                return onSuccess(json);
+            } else {
+                return onError(json.error);
+            }
         } catch (error) {
             return onError(error);
         }
@@ -51,7 +56,6 @@ export function getDetails(id) {
             })
         }
         function onError(error) {
-            console.error(error);
             dispatch({
                 type: ADD_ERROR,
                 payload: error
@@ -60,7 +64,11 @@ export function getDetails(id) {
         try {
             const response = await fetch(`${VIDEOGAME_URL}${id}`);
             const json = await response.json();
-            return onSuccess(json);
+            if (response.ok) {
+                return onSuccess(json);
+            } else {
+                return onError(json.error);
+            }
 
         } catch (error) {
             return onError(error);
@@ -157,5 +165,12 @@ export function setSortByRating(newSort) {
     return {
         type: SET_SORT_RATING,
         payload: newSort
+    };
+}
+
+export function resetErrorMessages() {
+    return {
+        type: RESET_ERRORS,
+        payload: []
     };
 }

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 
-import { getDetails } from "../actions";
+import { getDetails, resetErrorMessages } from "../actions";
 import { Link, useParams } from "react-router-dom";
 import { connect } from "react-redux";
+
+import Loader from "./Loader";
 
 import s from "./Detail.module.css";
 import cs from "./Card.module.css";
@@ -11,16 +13,19 @@ import Genre from "./Genre";
 function mapStateToProps(state) {
     return {
         game: state.gameDetail,
+        errorMessages: state.errorMessages,
     };
 }
 function mapDispatchToProps(dispatch) {
     return {
         getDetails: (id) => dispatch(getDetails(id)),
+        resetErrors: () => dispatch(resetErrorMessages()),
     };
 }
 
 function Detail(props) {
     const [loading, setLoading] = useState(true);
+    const [localError, setLocalError] = useState(false);
     let searchParams = useParams();
 
     useEffect(() => {
@@ -32,15 +37,28 @@ function Detail(props) {
     }, []);
 
     useEffect(() => {
-        if (props.game && props.game.name) {
+        if (props.game && (props.game.name || props.errorMessages.length > 0)) {
             setLoading(false);
-            console.log(props.game);
+        }
+        if (props.errorMessages.length > 0) {
+            setLocalError(true);
+            props.resetErrors();
         }
     }, [props]);
 
     if (loading) {
-        return <div>Loading...</div>;
-    } else {
+        return <Loader></Loader>;
+    } else if (localError) {
+        return (
+            <div className={s.detail}>
+                <h2>No encontramos lo que buscabas :/</h2>
+                <p>Intenta otra vez</p>
+                <button className="button">
+                    <Link to="/home">Regresar</Link>
+                </button>
+            </div>
+        );
+    } else
         return (
             <div className={s.detail}>
                 <div className={s.name}>
@@ -49,8 +67,8 @@ function Detail(props) {
                         <img src={props.game.image} alt="Videogame" />
                     </div>
                     <div className={s.releaseAndRating}>
-                        <div>{props.game.launchDate}</div>
-                        <div className={s.rating}>{props.game.rating}</div>
+                        <div>fecha de lanzamiento: {props.game.launchDate}</div>
+                        <div className={s.rating}>rating: {props.game.rating}</div>
                     </div>
                 </div>
                 {props.game.description && (
@@ -93,7 +111,6 @@ function Detail(props) {
                 </div>
             </div>
         );
-    }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Detail);

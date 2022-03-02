@@ -4,6 +4,7 @@ import {
     POST_VIDEOGAME,
     GET_GENRES,
     ADD_ERROR,
+    RESET_ERRORS,
     SET_SOURCE,
     SET_FILTERS,
     SET_SORT_ALPHA,
@@ -50,6 +51,11 @@ export default function rootReducer(state = initialState, action) {
             return {
                 ...state,
                 errorMessages: action.payload
+            };
+        case RESET_ERRORS:
+            return {
+                ...state,
+                errorMessages: []
             };
         case SET_SOURCE:
             return {

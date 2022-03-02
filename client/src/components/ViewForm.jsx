@@ -26,6 +26,8 @@ function mapStateToProps(state) {
     return {
         filters: state.filters,
         genres: state.genres,
+        source: state.source,
+        sort: state.sortAlpha || state.sortRating,
     };
 }
 
@@ -47,9 +49,9 @@ function Form({
     userSearch,
     setUserSearch,
     setLoading,
-    setStateGamesSource,
+    source, setStateGamesSource,
     setStateFilters,
-    setStateSortAlphabetically,
+    sort, setStateSortAlphabetically,
     setStateSortByRating,
 }) {
     function onGenresChange(e) {
@@ -77,7 +79,7 @@ function Form({
         if (e.target.value !== "0") {
             setStateGamesSource(e.target.value);
         } else {
-            setStateGamesSource(undefined);
+            setStateGamesSource(SOURCE_ALL);
         }
     }
 
@@ -112,6 +114,7 @@ function Form({
                         type="submit"
                         className="button"
                         onClick={handleSubmit}
+                        disabled={userSearch === ""}
                     >
                         Borrar búsqueda
                     </button>
@@ -119,7 +122,12 @@ function Form({
                 <button
                     type="button"
                     className="button resetFilters"
-                    onClick={() => setStateFilters([])}
+                    onClick={() => {
+                        setStateGamesSource(SOURCE_ALL);
+                        setStateFilters([]);
+                        setStateSortAlphabetically(undefined);
+                        setStateSortByRating(undefined);
+                    }}
                 >
                     Limpiar filtros
                 </button>
@@ -129,6 +137,7 @@ function Form({
                             onChange={onSourceChange}
                             id="change-sort"
                             name="source"
+                            value={source}
                         >
                             <option value={SOURCE_ALL}>Todos</option>
                             <option value={SOURCE_API}>Solo API</option>
@@ -157,6 +166,7 @@ function Form({
                             onChange={onSortingChange}
                             id="change-sort"
                             name="order"
+                            value={sort || 0}
                         >
                             <option value={0}>Ordenar</option>
                             <option value={ORDER_A_Z}>A-Z</option>

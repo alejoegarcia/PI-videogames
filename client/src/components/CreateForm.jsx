@@ -4,6 +4,25 @@ import { postVideogame } from "../actions";
 
 import s from "./CreateForm.module.css";
 
+const availablePlatforms = [
+    "Atari 8-bit",
+    "Dreamcast",
+    "GameCube",
+    "Game Boy",
+    "NES",
+    "SEGA",
+    "Nintendo Switch",
+    "PlayStation 5",
+    "PlayStation 4",
+    "PlayStation 3",
+    "Xbox",
+    "Wii",
+    "Android",
+    "iOS",
+    "Linux",
+    "macOS",
+];
+
 function validate(input) {
     let errors = {};
     if (!input.name) {
@@ -44,7 +63,7 @@ export default function CreateForm() {
         name: "",
         description: "",
         launchDate: "",
-        rating: 0,
+        rating: "",
         genres: [],
         platforms: [],
     });
@@ -122,6 +141,7 @@ export default function CreateForm() {
                     placeholder="Nombre del juego"
                     onChange={handleInputChange}
                     required={true}
+                    value={input.name}
                 />
                 <div>{errors.name && <p>{errors.name}</p>}</div>
             </div>
@@ -134,6 +154,7 @@ export default function CreateForm() {
                     autoCorrect="off"
                     autoComplete="off"
                     onChange={handleInputChange}
+                    value={input.description}
                 />
                 <div>{errors.description && <p>{errors.description}</p>}</div>
             </div>
@@ -144,6 +165,7 @@ export default function CreateForm() {
                     name="launchDate"
                     id="gameDate"
                     onChange={handleInputChange}
+                    value={input.launchDate}
                 />
                 <div>{errors.launchDate && <p>{errors.launchDate}</p>}</div>
             </div>
@@ -155,6 +177,7 @@ export default function CreateForm() {
                     id="gameRate"
                     autoComplete="off"
                     onChange={handleInputChange}
+                    value={input.rating}
                 />
                 <div>{errors.rating && <p>{errors.rating}</p>}</div>
             </div>
@@ -167,10 +190,10 @@ export default function CreateForm() {
                                 <input
                                     type="checkbox"
                                     id={`cbox-${genre.id}`}
-                                    // className={`${s.checkbox} ${s.hiddenxsup}`}
                                     value={genre.name}
                                     name="genres"
                                     onChange={handleInputChange}
+                                    checked={input.genres.includes(genre.name)}
                                 />
                                 <label>{genre.name}</label> <br />
                             </div>
@@ -181,150 +204,21 @@ export default function CreateForm() {
             <div>
                 <label htmlFor="platforms">Plataformas </label> <br />
                 <div className={s.checkboxes}>
-                    <div>
-                        <input
-                            type="checkbox"
-                            id="cbox-atari"
-                            value="Atari 8-bit"
-                            onChange={handleInputChange}
-                        />
-                        <label>Atari 8-bit</label> <br />
-                    </div>
-                    <div>
-                        <input
-                            type="checkbox"
-                            id="cbox-dreamcast"
-                            value="Dreamcast"
-                            onChange={handleInputChange}
-                        />
-                        <label>Dreamcast</label> <br />
-                    </div>
-                    <div>
-                        <input
-                            type="checkbox"
-                            id="cbox-gamecube"
-                            value="GameCube"
-                            onChange={handleInputChange}
-                        />
-                        <label>GameCube</label> <br />
-                    </div>
-                    <div>
-                        <input
-                            type="checkbox"
-                            id="cbox-gameboy"
-                            value="Game Boy"
-                            onChange={handleInputChange}
-                        />
-                        <label>Game Boy</label> <br />
-                    </div>
-                    <div>
-                        <input
-                            type="checkbox"
-                            id="cbox-nes"
-                            value="NES"
-                            onChange={handleInputChange}
-                        />{" "}
-                        <label>NES</label> <br />
-                    </div>
-                    <div>
-                        <input
-                            type="checkbox"
-                            id="cbox-sega"
-                            value="SEGA"
-                            onChange={handleInputChange}
-                        />{" "}
-                        <label>SEGA</label> <br />
-                    </div>
-                    <div>
-                        <input
-                            type="checkbox"
-                            id="cbox-nintendo"
-                            value="Nintendo Switch"
-                            onChange={handleInputChange}
-                        />{" "}
-                        <label>Nintendo Switch</label> <br />
-                    </div>
-                    <div>
-                        <input
-                            type="checkbox"
-                            id="cbox-ps5"
-                            value="PlayStation 5"
-                            onChange={handleInputChange}
-                        />{" "}
-                        <label>PlayStation 5</label> <br />
-                    </div>
-                    <div>
-                        <input
-                            type="checkbox"
-                            id="cbox-ps4"
-                            value="PlayStation 4"
-                            onChange={handleInputChange}
-                        />{" "}
-                        <label>PlayStation 4</label> <br />
-                    </div>
-                    <div>
-                        <input
-                            type="checkbox"
-                            id="cbox-ps3"
-                            value="PlayStation 3"
-                            onChange={handleInputChange}
-                        />{" "}
-                        <label>PlayStation 3</label> <br />
-                    </div>
-                    <div>
-                        <input
-                            type="checkbox"
-                            id="cbox-xbox"
-                            value="Xbox"
-                            onChange={handleInputChange}
-                        />{" "}
-                        <label>Xbox</label> <br />
-                    </div>
-                    <div>
-                        <input
-                            type="checkbox"
-                            id="cbox-wii"
-                            value="Wii"
-                            onChange={handleInputChange}
-                        />{" "}
-                        <label>Wii</label> <br />
-                    </div>
-                    <div>
-                        <input
-                            type="checkbox"
-                            id="cbox-android"
-                            value="Android"
-                            onChange={handleInputChange}
-                        />{" "}
-                        <label>Android</label> <br />
-                    </div>
-                    <div>
-                        <input
-                            type="checkbox"
-                            id="cbox-ios"
-                            value="iOS"
-                            onChange={handleInputChange}
-                        />{" "}
-                        <label>iOS</label> <br />
-                    </div>
-                    <div>
-                        <input
-                            type="checkbox"
-                            id="cbox-linux"
-                            value="Linux"
-                            onChange={handleInputChange}
-                        />{" "}
-                        <label>Linux</label> <br />
-                    </div>
-                    <div>
-                        <input
-                            type="checkbox"
-                            id="cbox-macos"
-                            value="macOS"
-                            onChange={handleInputChange}
-                        />{" "}
-                        <label>macOS</label> <br />
-                    </div>
+                    {availablePlatforms.map((platform, ix) => {
+                        return (
+                            <div className="p" key={ix}>
+                                <input
+                                    type="checkbox"
+                                    id={`cbox-${ix}`}
+                                    value={platform}
+                                    name="platforms"
+                                    onChange={handleInputChange}
+                                    checked={input.platforms.includes(platform)}
+                                />
+                                <label>{platform}</label> <br />
+                            </div>
+                        );
+                    })}
                 </div>
                 <div>{errors.platforms && <p>{errors.platforms}</p>}</div>
             </div>
