@@ -1,3 +1,4 @@
+// #region imports
 require('dotenv').config();
 const { Sequelize } = require('sequelize');
 const fs = require('fs');
@@ -5,7 +6,9 @@ const path = require('path');
 const {
     DB_USER, DB_PASSWORD, DB_HOST,
 } = process.env;
+// #endregion
 
+// sequelize instantiation and connection to the DB
 const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/videogames`, {
     logging: false, // set to console.log to see the raw SQL queries
     native: false, // lets Sequelize know we can use pg-native for ~30% more speed
@@ -36,7 +39,9 @@ const { Videogame, Genre } = sequelize.models;
 Videogame.belongsToMany(Genre, { through: "Videogame_Genre" });
 Genre.belongsToMany(Videogame, { through: "Videogame_Genre" });
 
+// #region exports
 module.exports = {
     ...sequelize.models, // para poder importar los modelos así: const { Product, User } = require('./db.js');
-    conn: sequelize,     // para importart la conexión { conn } = require('./db.js');
+    conn: sequelize,     // para importar la conexión { conn } = require('./db.js');
 };
+// #endregion

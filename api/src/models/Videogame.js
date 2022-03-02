@@ -1,14 +1,16 @@
+// #region imports
 const { DataTypes } = require('sequelize');
+// #endregion
 
 const availablePlatforms = [
     '3DO', 'Android', 'Apple II', 'Atari 2600', 'Atari 5200', 'Atari 7800', 'Atari 8-bit', 'Atari Flashback', 'Atari Lynx', 'Atari ST', 'Atari XEGS', 'Classic Macintosh', 'Commodore / Amiga', 'Dreamcast', 'Game Boy', 'Game Boy Advance', 'Game Boy Color', 'Game Gear', 'GameCube', 'Genesis', 'iOS', 'Jaguar', 'Linux', 'macOS', 'NES', 'Neo Geo', 'Nintendo 3DS', 'Nintendo 64', 'Nintendo DS', 'Nintendo Switch', 'PC', 'PS Vita', 'PSP', 'PlayStation', 'PlayStation 2', 'PlayStation 3', 'PlayStation 4', 'PlayStation 5', 'SEGA 32X', 'SEGA CD', 'SEGA Master System', 'SEGA Saturn', 'SNES', 'Web', 'Wii', 'Wii U', 'Xbox', 'Xbox 360', 'Xbox One', 'Xbox Series S/X'
 ]
+
+// #region exports
 // Exportamos una funcion que define el modelo
 // Luego le injectamos la conexion a sequelize.
 module.exports = (sequelize) => {
     return sequelize.define('videogame', {
-        // TODO: use this regex /^\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$/g to recognize local games
-        // or use ?source=local in the query
         id: {
             // "No puede ser un ID de un videojuego ya existente en la API rawg"
             type: DataTypes.UUID,
@@ -84,7 +86,6 @@ module.exports = (sequelize) => {
             }
         },
         platforms: {
-            // TODO: should I get the available platforms from the API?
             type: DataTypes.ARRAY(DataTypes.STRING(20)),
             allowNull: false,
             validate: {
@@ -102,3 +103,4 @@ module.exports = (sequelize) => {
         }
     });
 }
+// #endregion

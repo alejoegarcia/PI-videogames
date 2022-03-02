@@ -8,21 +8,21 @@ const {
     getDetailsFromAPI,
     getGenresFromAPI,
 } = require("../utils.js");
-
 // #endregion imports
+
 // Importar todos los routers;
 // Ejemplo: const authRouter = require('./auth.js');
 
 // #region general variables
 const router = express.Router();
 
-// general variables
 // #endregion general variables
 
 // Configurar los routers
 // Ejemplo: router.use('/auth', authRouter);
 router.use(express.json());
 
+// #region get /videogames
 router.get("/videogames", async (request, response) => {
     // get from DB and API
     let videogames = [];
@@ -51,25 +51,24 @@ router.get("/videogames", async (request, response) => {
                             [Op.like]: `%${request.query.name}%`,
                         },
                     },
+                    // includes all the relations
                     include: Genre,
                 })),
             ];
-            console.log("got call", videogames);
+
         } catch (error) {
-            console.log("error", error);
-            const e = {};
-            e[error.message] = error.response.data.error;
-            return response.status(404).json(e);
+            return response.status(404).json(error);
         }
     } else {
+        // we have to return both
         let APIcall = null;
         let DBcall = null;
+
+        // we use separate try/catch to me more specific
         try {
             APIcall = await getVideogamesFromAPI();
-            console.log(typeof APIcall, APIcall.length);
         } catch (error) {
-            console.log(error);
-            return response.status(500).json(e);
+            return response.status(500).json(error);
         }
         try {
             DBcall = await Videogame.findAll({
@@ -81,56 +80,29 @@ router.get("/videogames", async (request, response) => {
                     "rating",
                     "platforms",
                 ],
+                // includes all the relations
                 include: Genre,
             });
-            console.log(typeof DBcall, DBcall.length);
         } catch (error) {
-            console.log(error);
-            return response.status(500).json(e);
+            return response.status(500).json(error);
         }
+
         videogames = [...APIcall, ...DBcall];
-        // get all
-        // destructuring de la llamada a la API y a la DB
-        /* try {
-            if (request.query.source === "local") {
-                videogames = [
-                    ...await Videogame.findAll({
-                        attributes: ["id", 'name', 'description', "launchDate", "rating", "platforms"],
-                        include: Genre
-                    })
-                ];
-            } else if (request.query.source === "external") {
-                videogames = [
-                    ...await getVideogamesFromAPI()
-                ];
-            } else {
-                videogames = [
-                    ...await getVideogamesFromAPI(),
-                    ...await Videogame.findAll({
-                        attributes: ["id", 'name', 'description', "launchDate", "rating", "platforms"],
-                        include: Genre
-                    })
-                ];
-            }
-            if (videogames.length === 0) {
-                return response.json({ "warning": "no games found" });
-            }
-        } catch (error) {
-            // TODO: handle other errors, this is API-specific
-            // const e = {};
-            // e[error.message] = error.response.data.error;
-            return response.status(404).json(error);
-        } */
     }
+
+    // catch if there were no errors but we didn't find anything
     if (videogames.length === 0) {
         return response.json({ "error": "not found" });
     }
+
+    // everything went smoothly
     return response.json(videogames);
 });
+// #endregion
 
+// #region get /videogame/:idVideogame
 router.get("/videogame/:idVideogame", async (request, response) => {
     // get by id, request.params.idVideogame
-    // include: Genre (sequelize)
     let videogameDetails = {};
 
     // if idVideogame isNaN, it can only be a (local) UUIDV4
@@ -148,6 +120,7 @@ router.get("/videogame/:idVideogame", async (request, response) => {
                         "rating",
                         "platforms",
                     ],
+                    // includes all the relations
                     include: Genre,
                 }
             );
@@ -160,8 +133,6 @@ router.get("/videogame/:idVideogame", async (request, response) => {
                     error: `Local Videogame with ID ${request.params.idVideogame} not found`,
                 });
         }
-
-        // return response.json(videogameDetails);
     } else {
         // get it from the API
         try {
@@ -187,9 +158,13 @@ router.get("/videogame/:idVideogame", async (request, response) => {
             return response.status(404).json(error);
         }
     }
+
+    // there were no errors
     return response.json(videogameDetails);
 });
+// #endregion
 
+// #region get /genres
 router.get("/genres", async (request, response) => {
     // if the call to DB returns an empty array, call the API and save the results to the DB
     let genres = await Genre.findAll();
@@ -216,17 +191,18 @@ router.get("/genres", async (request, response) => {
 
     return response.json(genres);
 });
+// #endregion
 
+// #region post /videogame
 router.post("/videogame", async (request, response) => {
     // create videogame, save to DB and return success
     // request.body.*
     const { name, description, launchDate, rating, platforms, genres } =
         request.body.game;
-    console.log("request", request.body.game);
-    console.log("body", request.body);
+
     // we shouldn't be able to get to POST without going through the previously validated react-form but it's safer to check everything's in place
     if (!name || !description || !platforms) {
-        return response.status(400).json({ error: "Faltan datos" });
+        return response.status(400).json({ error: "missing data" });
     }
     try {
         const alreadyExists = await Videogame.findAll({
@@ -236,10 +212,12 @@ router.post("/videogame", async (request, response) => {
                 platforms: platforms,
             },
         });
-        console.log("alreadyExists", alreadyExists);
+
         if (alreadyExists.length > 0) {
             return response.status(400).json({ error: "game already exists" });
         }
+
+        // if we have all the data and it's not in the local DB, save it
         const newGame = await Videogame.create(request.body.game);
         response.status(201).json({
             id: newGame.id,
@@ -250,7 +228,6 @@ router.post("/videogame", async (request, response) => {
             platforms: newGame.platforms,
         });
     } catch (error) {
-        console.log("error, ", error);
         const prettyError = {
             error: error.errors.map((e) => {
                 return { [e.type]: e.message };
@@ -260,5 +237,8 @@ router.post("/videogame", async (request, response) => {
         return response.status(400).json(prettyError);
     }
 });
+// #endregion
 
+// #region exports
 module.exports = router;
+// #endregion

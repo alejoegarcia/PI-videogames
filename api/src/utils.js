@@ -2,6 +2,7 @@
 require('dotenv').config();
 const axios = require('axios');
 const { RAWG_API_KEY } = process.env;
+// #endregion
 
 const maxGamesfromAPI = 100;
 
@@ -10,6 +11,7 @@ const getAllGamesURL = `https://api.rawg.io/api/games?key=${RAWG_API_KEY}`;
 const getGamesByNameURL = `https://api.rawg.io/api/games?key=${RAWG_API_KEY}&search=`;
 const getGenresURL = `https://api.rawg.io/api/genres?key=${RAWG_API_KEY}`;
 const getGameDetailsURL = `https://api.rawg.io/api/games/GAMEID?key=${RAWG_API_KEY}`;
+// #endregion
 
 // #region API
 async function callAPI(url) {
@@ -70,20 +72,24 @@ async function getVideogamesFromAPI(paginatedURL, alreadyFetchedGames = 0, gameN
 }
 
 async function getDetailsFromAPI(id) {
+    // insert the given id into the URL
     const url = getGameDetailsURL.replace("GAMEID", id);
     try {
         const responseData = await callAPI(url);
         return responseData;
     } catch (error) {
+        // something happened
         throw error;
     }
 }
 
 async function getGenresFromAPI() {
+    // gets [id, name]
     try {
         const responseData = await callAPI(getGenresURL);
         return responseData;
     } catch (error) {
+        // something happened
         throw error;
     }
 }
@@ -95,3 +101,4 @@ module.exports = {
     getDetailsFromAPI,
     getGenresFromAPI
 };
+// #endregion
