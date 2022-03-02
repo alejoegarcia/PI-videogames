@@ -1,11 +1,8 @@
 .form {
     padding: 5vw;
-    /* display: flex;
-    flex-wrap: wrap; */
     display: inline-grid;
     grid-template-columns: repeat(2, 1fr);
     grid-gap: 0px;
-    /* grid-auto-rows: minmax(0px, 1fr); */
     text-align: left;
     margin: auto;
 }
