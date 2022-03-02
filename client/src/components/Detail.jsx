@@ -9,6 +9,7 @@ import Loader from "./Loader";
 import s from "./Detail.module.css";
 import cs from "./Card.module.css";
 import Genre from "./Genre";
+import Button from "./Button";
 
 function mapStateToProps(state) {
     return {
@@ -68,7 +69,9 @@ function Detail(props) {
                     </div>
                     <div className={s.releaseAndRating}>
                         <div>fecha de lanzamiento: {props.game.launchDate}</div>
-                        <div className={s.rating}>rating: {props.game.rating}</div>
+                        <div className={s.rating}>
+                            rating: {props.game.rating}
+                        </div>
                     </div>
                 </div>
                 {props.game.description && (
@@ -105,9 +108,11 @@ function Detail(props) {
                     </div>
                 )}
                 <div className={s.btnWrapper}>
-                    <button className="button">
-                        <Link to="/home">Regresar</Link>
-                    </button>
+                    <Button
+                        id="detailGoBack"
+                        to="/home"
+                        text="Regresar"
+                    ></Button>
                 </div>
             </div>
         );

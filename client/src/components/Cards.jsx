@@ -76,6 +76,7 @@ function Cards({
     }, []);
 
     useEffect(() => {
+        document.title = `Videogames - page ${currentPage}`;
         window.scrollTo({ behavior: "smooth", top: "0px" });
     }, [currentPage]);
 
