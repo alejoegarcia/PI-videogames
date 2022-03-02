@@ -1,11 +1,6 @@
 import React from "react";
 
-import Button from "./Button";
 export default function Footer() {
-    /* outline: 0px;
-    border: 0px;
-    background-color: red;
-    height: 2px; */
     return (
         <div>
             <hr
